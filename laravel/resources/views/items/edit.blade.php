@@ -15,7 +15,7 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Montserrat', sans-se rif;
         }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
