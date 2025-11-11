@@ -14,10 +14,16 @@
             font-style: normal;
         }
 
+        @font-face {
+            font-family: 'Nebulax';
+            src: url('/Font/nebulax.ttf') format('truetype');
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
         }
     </style>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -77,10 +83,29 @@
         .carousel-image.active {
             opacity: 0.45;
         }
+
+        /* Custom Scrollbar */
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #3b82f6, #2563eb);
+            border-radius: 10px;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body class="h-screen overflow-hidden">
     <!-- Carousel Background -->
     <div class="carousel-container">
         <div class="carousel-image" style="background-image: url('/Img/Carousel1.png');" data-image="1"></div>
@@ -91,39 +116,36 @@
     </div>
 
     <!-- Top Navigation Bar -->
-    <div class="bg-red-800 text-white p-4 flex justify-between items-center">
+    <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-4 flex justify-between items-center shadow-xl border-b-2 border-red-900">
         <div class="flex items-center space-x-4">
-            <img src="/Img/Icon.png" alt="BFP Icon" class="h-8 w-8">
-            <h1 class="text-xl font-bold">BFP INVENTORY SYSTEM</h1>
+            <img src="/Img/Icon.png" alt="BFP Icon" class="h-10 w-10 rounded-lg shadow-lg ring-2 ring-white/20">
+            <h1 class="text-2xl font-bold tracking-wide">BFP INVENTORY SYSTEM</h1>
         </div>
         <div class="flex items-center space-x-4">
-            <i id="sidebarToggle" class="fas fa-bars text-white cursor-pointer hover:text-blue-200"></i>
+            <i id="sidebarToggle" class="fas fa-bars text-white text-xl cursor-pointer hover:text-blue-200 hover:scale-110 transition-transform duration-200 p-2 rounded-lg hover:bg-white/10"></i>
         </div>
     </div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gray-800 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50">
-        <div class="p-4">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-semibold">Navigation</h2>
-                <button id="sidebarClose" class="text-white hover:text-gray-300">
-                    <i class="fas fa-times"></i>
+    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl border-l border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-700">
+                <h2 class="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Navigation</h2>
+                <button id="sidebarClose" class="text-white hover:text-red-400 hover:bg-red-500/20 p-2 rounded-lg transition-all duration-200">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <nav class="space-y-2">
-                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                    <i class="fas fa-home mr-2"></i>Dashboard
+            <nav class="space-y-3">
+                <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-home mr-3"></i>Dashboard
                 </a>
-                <a href="{{ route('admin.settings') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                    <i class="fas fa-truck mr-2"></i>Suppliers
-                </a>
-                <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                    <i class="fas fa-users mr-2"></i>Users
+                <a href="{{ route('admin.users') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-users mr-3"></i>Users
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="block">
                     @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    <button type="submit" class="w-full text-left px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-red-600 hover:to-rose-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Logout
                     </button>
                 </form>
             </nav>
@@ -134,104 +156,148 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
     <!-- Main Content -->
-    <div class="flex justify-center p-8">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-6xl">
-            <!-- Header Section -->
-            <div class="p-6 border-b">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800">Reports</h2>
-                    <a href="{{ route('dashboard') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
-                    </a>
-                </div>
-
-                @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
-                </div>
-                @endif
-
-                @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
-                </div>
-                @endif
-
-                <!-- Filter Form -->
-                <form method="GET" action="{{ route('reports.index') }}" class="mb-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
-                            <select name="type" id="type" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Types</option>
-                                <option value="addition" {{ request('type') == 'addition' ? 'selected' : '' }}>Addition</option>
-                                <option value="decrease" {{ request('type') == 'decrease' ? 'selected' : '' }}>Decrease</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="item_id" class="block text-sm font-medium text-gray-700 mb-1">Item</label>
-                            <select name="item_id" id="item_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">All Items</option>
-                                @foreach($items as $item)
-                                <option value="{{ $item->id }}" {{ request('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="flex items-end">
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors mr-2">
-                                <i class="fas fa-filter mr-2"></i>Filter
-                            </button>
-                            <a href="{{ route('reports.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors">
-                                <i class="fas fa-times mr-2"></i>Clear
-                            </a>
-                        </div>
+    <div class="flex justify-center p-8 h-[calc(100vh-72px)] overflow-hidden">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1790px] border border-white/20 flex flex-col h-full">
+            <!-- Header Section - Sticky -->
+            <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
+                            <i class="fas fa-chart-bar mr-3 text-blue-600"></i>Reports
+                        </h2>
+                        <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        </a>
                     </div>
-                </form>
+
+                    @if(session('success'))
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg mb-4 shadow-md flex items-center animate-pulse">
+                        <i class="fas fa-check-circle mr-2 text-green-600"></i>{{ session('success') }}
+                    </div>
+                    @endif
+
+                    @if(session('error'))
+                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-4 shadow-md flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2 text-red-600"></i>{{ session('error') }}
+                    </div>
+                    @endif
+
+                    <!-- Filter Form -->
+                    <form method="GET" action="{{ route('reports.index') }}" class="mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500">
+                                <label for="type" class="block text-sm font-bold text-gray-700 mb-2 flex items-center">
+                                    <i class="fas fa-filter mr-2 text-blue-600"></i>Report Type
+                                </label>
+                                <select name="type" id="type" class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm bg-white">
+                                    <option value="">All Types</option>
+                                    <option value="addition" {{ request('type') == 'addition' ? 'selected' : '' }}>Addition</option>
+                                    <option value="decrease" {{ request('type') == 'decrease' ? 'selected' : '' }}>Decrease</option>
+                                </select>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-l-4 border-green-500">
+                                <label for="item_id" class="block text-sm font-bold text-gray-700 mb-2 flex items-center">
+                                    <i class="fas fa-box mr-2 text-green-600"></i>Item
+                                </label>
+                                <select name="item_id" id="item_id" class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 shadow-sm bg-white">
+                                    <option value="">All Items</option>
+                                    @foreach($items as $item)
+                                    <option value="{{ $item->id }}" {{ request('item_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="flex items-end gap-2">
+                                <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold flex-1">
+                                    <i class="fas fa-filter mr-2"></i>Filter
+                                </button>
+                                <a href="{{ route('reports.index') }}" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold">
+                                    <i class="fas fa-times mr-2"></i>Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- Reports Table -->
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto overflow-y-auto rounded-b-2xl flex-1 min-h-0">
                 <table class="w-full">
-                    <thead>
-                        <tr class="bg-gray-50">
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Date</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Type</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Item</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Quantity Change</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Cost Change</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Reason</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">User</th>
-                            <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                    <thead class="sticky top-0 z-10">
+                        <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 text-white shadow-lg">
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-calendar mr-2"></i>Date
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-tag mr-2"></i>Type
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-box mr-2"></i>Item
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-sort-numeric-up mr-2"></i>Quantity Change
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-dollar-sign mr-2"></i>Cost Change
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-comment mr-2"></i>Reason
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-user mr-2"></i>User
+                            </th>
+                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
+                                <i class="fas fa-cog mr-2"></i>Actions
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($reports as $report)
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $report->created_at->format('M d, Y H:i') }}</td>
+                        @forelse($reports as $index => $report)
+                        <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                <i class="fas fa-clock mr-2 text-gray-400"></i>{{ $report->created_at->format('M d, Y H:i') }}
+                            </td>
                             <td class="px-6 py-4 text-sm">
-                                <span class="px-2 py-1 rounded-full text-xs font-medium
-                                    {{ $report->type == 'addition' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ ucfirst($report->type) }}
+                                <span class="px-3 py-1.5 rounded-full text-xs font-bold shadow-sm
+                                    @if($report->type == 'addition') bg-gradient-to-r from-green-400 to-emerald-500 text-white
+                                    @else bg-gradient-to-r from-red-400 to-rose-500 text-white
+                                    @endif">
+                                    <i class="fas fa-circle text-[6px] mr-1"></i>{{ ucfirst($report->type) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $report->item->name }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $report->quantity_change }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">
-                                @if($report->cost_change > 0)
-                                <span class="text-green-600">+₱{{ number_format($report->cost_change, 2) }}</span>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-semibold">
+                                <i class="fas fa-box-open mr-2 text-blue-500"></i>{{ $report->item->name }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-bold">
+                                @if($report->type == 'addition')
+                                <span class="text-green-600 bg-green-50 px-2 py-1 rounded-full">+{{ $report->quantity_change }}</span>
                                 @else
-                                <span class="text-red-600">-₱{{ number_format(abs($report->cost_change), 2) }}</span>
+                                <span class="text-red-600 bg-red-50 px-2 py-1 rounded-full">-{{ $report->quantity_change }}</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $report->reason ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">{{ $report->user->name }}</td>
+                            <td class="px-6 py-4 text-sm font-bold">
+                                @if($report->cost_change > 0)
+                                <span class="text-green-700 bg-green-50 px-2 py-1 rounded-full">
+                                    <i class="fas fa-arrow-up mr-1"></i>+₱{{ number_format($report->cost_change, 2) }}
+                                </span>
+                                @else
+                                <span class="text-red-700 bg-red-50 px-2 py-1 rounded-full">
+                                    <i class="fas fa-arrow-down mr-1"></i>-₱{{ number_format(abs($report->cost_change), 2) }}
+                                </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                <i class="fas fa-comment-alt mr-2 text-gray-400"></i>{{ $report->reason ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                <i class="fas fa-user-circle mr-2 text-gray-400"></i>{{ $report->user->name }}
+                            </td>
                             <td class="px-6 py-4 text-sm">
                                 <form action="{{ route('reports.destroy', $report) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this report?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700">
+                                    <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1.5 rounded-lg text-xs hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
                                         <i class="fas fa-trash mr-1"></i>Delete
                                     </button>
                                 </form>
@@ -239,10 +305,12 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
-                                <i class="fas fa-file-alt text-4xl mb-4"></i>
-                                <p class="text-lg">No reports found</p>
-                                <p class="text-sm">Click "Add Report" to create a new report</p>
+                            <td colspan="8" class="px-6 py-16 text-center bg-gradient-to-br from-gray-50 to-gray-100">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
+                                    <p class="text-xl font-bold text-gray-600 mb-2">No reports found</p>
+                                    <p class="text-sm text-gray-500">Try adjusting your filters</p>
+                                </div>
                             </td>
                         </tr>
                         @endforelse
@@ -252,8 +320,10 @@
 
             <!-- Pagination -->
             @if($reports->hasPages())
-            <div class="p-6 border-t">
-                {{ $reports->links() }}
+            <div class="flex-shrink-0 p-6 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                <div class="flex items-center justify-center">
+                    {{ $reports->links() }}
+                </div>
             </div>
             @endif
         </div>

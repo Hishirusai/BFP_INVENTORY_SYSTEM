@@ -14,6 +14,8 @@ class Report extends Model
         'quantity_change',
         'cost_change',
         'reason',
+        'from_station_id',
+        'to_station_id',
     ];
 
     protected $casts = [
@@ -28,5 +30,15 @@ class Report extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function fromStation(): BelongsTo
+    {
+        return $this->belongsTo(Station::class, 'from_station_id');
+    }
+
+    public function toStation(): BelongsTo
+    {
+        return $this->belongsTo(Station::class, 'to_station_id');
     }
 }

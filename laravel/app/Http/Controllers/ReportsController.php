@@ -39,7 +39,7 @@ class ReportsController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'type' => 'required|in:addition,decrease',
+            'type' => 'required|in:addition,decrease,transfer',
             'item_id' => 'required|exists:items,id',
             'quantity_change' => 'required|integer',
             'reason' => 'nullable|string|max:255',

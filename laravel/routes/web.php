@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\StationController;
+use App\Http\Controllers\ItemTransferController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +27,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('items', ItemController::class);
     Route::get('/items/{item}/json', [ItemController::class, 'showJson'])->name('items.show.json');
     Route::get('/items/export/csv', [ItemController::class, 'export'])->name('items.export');
+    
+    // Item transfer routes
+    Route::get('/items/transfer/create', [ItemTransferController::class, 'create'])->name('items.transfer.create');
+    Route::post('/items/transfer', [ItemTransferController::class, 'store'])->name('items.transfer.store');
+    
+    // Station routes
+    Route::get('/stations', [StationController::class, 'index'])->name('stations.index');
+    Route::get('/stations/create', [StationController::class, 'create'])->name('stations.create');
+    Route::post('/stations', [StationController::class, 'store'])->name('stations.store');
+    Route::get('/stations/{station}', [StationController::class, 'show'])->name('stations.show');
+    Route::get('/stations/{station}/export', [StationController::class, 'export'])->name('stations.export');
+    Route::delete('/stations/{station}', [StationController::class, 'destroy'])->name('stations.destroy');
 
     // Admin routes
     Route::get('/admin/suppliersettings', [AdminController::class, 'index'])->name('admin.settings');

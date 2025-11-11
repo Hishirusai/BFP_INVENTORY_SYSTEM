@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BFP INVENTORY SYSTEM</title>
+    <title>{{ $station->name }} - BFP Inventory System</title>
     <link rel="icon" type="image/x-icon" href="/Img/Icon.png">
     <style>
         @font-face {
@@ -14,16 +14,10 @@
             font-style: normal;
         }
 
-        @font-face {
-            font-family: 'Nebulax';
-            src: url('/Font/nebulax.ttf') format('truetype');
-        }
-
         body {
             font-family: 'Montserrat', sans-serif;
         }
     </style>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -56,7 +50,6 @@
             z-index: -1;
         }
 
-        /* Carousel Styles */
         .carousel-container {
             position: fixed;
             top: 0;
@@ -82,29 +75,6 @@
 
         .carousel-image.active {
             opacity: 0.45;
-        }
-
-        /* Custom Scrollbar - Hidden */
-        .overflow-y-auto::-webkit-scrollbar {
-            width: 0px;
-            display: none;
-        }
-
-        .overflow-y-auto {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        .overflow-y-auto::-webkit-scrollbar-track {
-            display: none;
-        }
-
-        .overflow-y-auto::-webkit-scrollbar-thumb {
-            display: none;
-        }
-
-        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-            display: none;
         }
     </style>
 </head>
@@ -140,6 +110,9 @@
                 </button>
             </div>
             <nav class="space-y-3">
+                <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-home mr-3"></i>Dashboard
+                </a>
                 <a href="{{ route('admin.users') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-green-600 hover:to-emerald-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
                     <i class="fas fa-users mr-3"></i>Users
                 </a>
@@ -164,7 +137,7 @@
 
     <!-- Main Content -->
     <div class="flex justify-center p-8 h-[calc(100vh-72px)] overflow-hidden">
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1780px] border border-white/20 flex flex-col h-full">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1790px] border border-white/20 flex flex-col h-full">
             <!-- Header Section - Sticky -->
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
                 <div class="p-4">
@@ -174,27 +147,14 @@
                     </div>
                     @endif
 
-                    @if(session('error'))
-                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 text-red-800 px-3 py-2 rounded-lg mb-3 shadow-md flex items-center text-sm">
-                        <i class="fas fa-exclamation-circle mr-2 text-red-600"></i>{{ session('error') }}
-                    </div>
-                    @endif
-
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
-                            <i class="fas fa-building mr-2 text-blue-600"></i>MAIN CENTRAL STATION - Inventory Management
+                            <i class="fas fa-building mr-2 text-blue-600"></i>{{ $station->name }} - Inventory Management
                         </h2>
-                        <form method="POST" action="{{ route('logout') }}" class="whitespace-nowrap">
-                            @csrf
-                            <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1.5 rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </button>
-                        </form>
                     </div>
 
-                    <!-- Compact layout: Stats in one row, Reports and Action bar in another -->
+                    <!-- Stats Cards - Single Row -->
                     <div class="space-y-3">
-                        <!-- Stats Cards - Single Row -->
                         <div class="grid grid-cols-4 gap-3">
                             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
                                 <div>
@@ -225,7 +185,7 @@
                             </div>
                             <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-lg p-3 border border-red-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
                                 <div>
-                                    <div class="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $unserviceableItems ?? 0 }}</div>
+                                    <div class="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $unserviceableItems }}</div>
                                     <div class="text-xs text-red-100 font-semibold uppercase tracking-wide flex items-center mt-1">
                                         <i class="fas fa-exclamation-circle mr-1"></i>Unserviceable
                                     </div>
@@ -236,13 +196,10 @@
 
                         <!-- Action Bar - Compact -->
                         <div class="flex flex-wrap items-center gap-2">
-                                <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
+                                <a href="{{ route('items.create', ['station_id' => $station->id]) }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
                                     <i class="fas fa-plus mr-1.5"></i>Add Item
                                 </a>
-                                <a href="{{ route('items.transfer.create') }}" class="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-3 py-1.5 rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
-                                    <i class="fas fa-exchange-alt mr-1.5"></i>Transfer Item
-                                </a>
-                                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-2 flex-1 min-w-[200px]">
+                                <form method="GET" action="{{ route('stations.show', $station) }}" class="flex flex-wrap gap-2 flex-1 min-w-[200px]">
                                     <input type="text" name="search" placeholder="Search..."
                                         value="{{ request('search') }}"
                                         class="flex-1 border-2 border-gray-300 rounded-l-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200 shadow-sm">
@@ -251,18 +208,15 @@
                                         @foreach($units as $unit)
                                         <option value="{{ $unit }}" {{ request('unit') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
                                         @endforeach
-                                        @unless($units->contains('box'))
-                                        <option value="box" {{ request('unit') == 'box' ? 'selected' : '' }}>box</option>
-                                        @endunless
                                     </select>
                                     <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-r-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </form>
-                                <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-3 py-1.5 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl font-semibold text-sm">
+                                <a href="{{ route('stations.show', $station) }}" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-3 py-1.5 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl font-semibold text-sm">
                                     <i class="fas fa-times mr-1.5"></i>Clear
                                 </a>
-                                <a href="{{ route('items.export') }}" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
+                                <a href="{{ route('stations.export', $station) }}" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
                                     <i class="fas fa-download mr-1.5"></i>Export
                                 </a>
                             </div>
@@ -384,24 +338,16 @@
                                     <a href="{{ route('items.edit', $item) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
                                         <i class="fas fa-edit mr-1"></i>Edit
                                     </a>
-                                    <form action="{{ route('items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this item?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1.5 rounded-lg text-xs hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
-                                            <i class="fas fa-trash mr-1"></i>Delete
-                                        </button>
-                                    </form>
                                 </div>
                             </td>
-
                         </tr>
                         @empty
                         <tr>
                             <td colspan="9" class="px-6 py-16 text-center bg-gradient-to-br from-gray-50 to-gray-100">
                                 <div class="flex flex-col items-center">
                                     <i class="fas fa-box-open text-6xl text-gray-400 mb-4"></i>
-                                    <p class="text-xl font-bold text-gray-600 mb-2">No items found</p>
-                                    <p class="text-sm text-gray-500">Click "Add Item" to get started</p>
+                                    <p class="text-xl font-bold text-gray-600 mb-2">No items found in this station</p>
+                                    <p class="text-sm text-gray-500">Items will appear here once assigned to this station</p>
                                 </div>
                             </td>
                         </tr>
@@ -423,12 +369,10 @@
                 </div>
             </div>
             @endif
-
-            <!-- Stats Footer - Removed since we moved it to the top -->
         </div>
     </div>
 
-    <!-- Item Details Modal -->
+    <!-- Item Details Modal (same as dashboard) -->
     <div id="itemDetailsModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-2 border-gray-200 transform transition-all duration-300 scale-95" id="modalContent">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
@@ -446,7 +390,7 @@
     </div>
 
     <script>
-        // Add event listeners to item details links
+        // Item details modal functionality (same as dashboard)
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.item-details-link').forEach(link => {
                 link.addEventListener('click', function() {
@@ -457,7 +401,6 @@
         });
 
         function showItemDetails(itemId) {
-            // Fetch the item details via AJAX
             fetch(`/items/${itemId}/json`)
                 .then(response => response.json())
                 .then(item => {
@@ -520,7 +463,6 @@
                 })
                 .catch(error => {
                     console.error('Error fetching item details:', error);
-                    // Fallback to showing basic info from the table data
                     alert('Error loading item details. Please try again.');
                 });
         }
@@ -536,11 +478,34 @@
             }, 300);
         }
 
-        // Close modal when clicking outside
         document.getElementById('itemDetailsModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeItemDetailsModal();
             }
+        });
+
+        // Carousel functionality
+        let currentImage = 1;
+        const totalImages = 5;
+
+        function showImage(imageNumber) {
+            document.querySelectorAll('.carousel-image').forEach(img => {
+                img.classList.remove('active');
+            });
+            const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
+            if (currentImg) {
+                currentImg.classList.add('active');
+            }
+        }
+
+        function nextImage() {
+            currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
+            showImage(currentImage);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showImage(1);
+            setInterval(nextImage, 5000);
         });
 
         // Sidebar functionality
@@ -558,36 +523,8 @@
             document.getElementById('sidebar').classList.add('translate-x-full');
             document.getElementById('sidebarOverlay').classList.add('hidden');
         });
-
-        // Carousel functionality
-        let currentImage = 1;
-        const totalImages = 5;
-
-        function showImage(imageNumber) {
-            // Remove active class from all images
-            document.querySelectorAll('.carousel-image').forEach(img => {
-                img.classList.remove('active');
-            });
-
-            // Add active class to current image
-            const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
-            if (currentImg) {
-                currentImg.classList.add('active');
-            }
-        }
-
-        function nextImage() {
-            currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
-            showImage(currentImage);
-        }
-
-        // Initialize carousel
-        document.addEventListener('DOMContentLoaded', function() {
-            showImage(1); // Show first image
-            setInterval(nextImage, 5000); // Change every 5 seconds
-        });
     </script>
 </body>
 
 </html>
-</html>
+

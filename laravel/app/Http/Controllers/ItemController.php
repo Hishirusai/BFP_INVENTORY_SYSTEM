@@ -33,11 +33,13 @@ class ItemController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $suppliers = Supplier::all();
+        $stations = \App\Models\Station::where('is_active', true)->get();
         $units = Item::select('unit')->distinct()->pluck('unit');
-        return view('items.create', compact('suppliers', 'units'));
+        $selectedStationId = $request->get('station_id');
+        return view('items.create', compact('suppliers', 'stations', 'units', 'selectedStationId'));
     }
 
     /**
@@ -50,11 +52,14 @@ class ItemController extends Controller
             'sku' => 'required|string|max:255|unique:items,sku',
             'description' => 'nullable|string',
             'supplier_id' => 'nullable|exists:suppliers,id',
+            'station_id' => 'nullable|exists:stations,id',
             'unit' => 'required|string|max:50',
             'unit_cost' => 'nullable|numeric|min:0',
             'total_cost' => 'nullable|numeric|min:0',
             'quantity_on_hand' => 'required|integer|min:0',
             'reorder_level' => 'required|integer|min:0',
+            'condition' => 'nullable|in:serviceable,unserviceable',
+            'life_span_years' => 'nullable|integer|min:0',
             'date_acquired' => 'nullable|date',
         ]);
 
@@ -87,8 +92,9 @@ class ItemController extends Controller
     public function edit(Item $item)
     {
         $suppliers = Supplier::all();
+        $stations = \App\Models\Station::where('is_active', true)->get();
         $units = Item::select('unit')->distinct()->pluck('unit');
-        return view('items.edit', compact('item', 'suppliers', 'units'));
+        return view('items.edit', compact('item', 'suppliers', 'stations', 'units'));
     }
 
     /**
@@ -101,11 +107,14 @@ class ItemController extends Controller
             'sku' => 'required|string|max:255|unique:items,sku,' . $item->id,
             'description' => 'nullable|string',
             'supplier_id' => 'nullable|exists:suppliers,id',
+            'station_id' => 'nullable|exists:stations,id',
             'unit' => 'required|string|max:50',
             'unit_cost' => 'nullable|numeric|min:0',
             'total_cost' => 'nullable|numeric|min:0',
             'quantity_on_hand' => 'required|integer|min:0',
             'reorder_level' => 'required|integer|min:0',
+            'condition' => 'nullable|in:serviceable,unserviceable',
+            'life_span_years' => 'nullable|integer|min:0',
             'date_acquired' => 'nullable|date',
         ]);
 

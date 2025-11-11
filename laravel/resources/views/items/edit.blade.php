@@ -90,39 +90,42 @@
         <div class="carousel-image" style="background-image: url('/Img/Carousel5.png');" data-image="5"></div>
     </div>
     <!-- Top Navigation Bar -->
-    <div class="bg-red-800 text-white p-4 flex justify-between items-center">
+    <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-4 flex justify-between items-center shadow-xl border-b-2 border-red-900">
         <div class="flex items-center space-x-4">
-            <img src="/Img/Icon.png" alt="BFP Icon" class="h-8 w-8">
-            <h1 class="text-xl font-bold">BFP INVENTORY SYSTEM</h1>
+            <img src="/Img/Icon.png" alt="BFP Icon" class="h-10 w-10 rounded-lg shadow-lg ring-2 ring-white/20">
+            <h1 class="text-2xl font-bold tracking-wide">BFP INVENTORY SYSTEM</h1>
         </div>
         <div class="flex items-center space-x-4">
-            <i id="sidebarToggle" class="fas fa-bars text-white cursor-pointer hover:text-blue-200"></i>
+            <i id="sidebarToggle" class="fas fa-bars text-white text-xl cursor-pointer hover:text-blue-200 hover:scale-110 transition-transform duration-200 p-2 rounded-lg hover:bg-white/10"></i>
         </div>
     </div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gray-800 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50">
-        <div class="p-4">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-semibold">Navigation</h2>
-                <button id="sidebarClose" class="text-white hover:text-gray-300">
-                    <i class="fas fa-times"></i>
+    <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl border-l border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-700">
+                <h2 class="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Navigation</h2>
+                <button id="sidebarClose" class="text-white hover:text-red-400 hover:bg-red-500/20 p-2 rounded-lg transition-all duration-200">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <nav class="space-y-2">
-                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                    <i class="fas fa-home mr-2"></i>Dashboard
+            <nav class="space-y-3">
+                <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-home mr-3"></i>Dashboard
                 </a>
-                <a href="{{ route('admin.settings') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                    <i class="fas fa-cog mr-2"></i>Admin
+                <a href="{{ route('admin.users') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-green-600 hover:to-emerald-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-users mr-3"></i>Users
                 </a>
-                <a href="{{ route('reports.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                    <i class="fas fa-chart-bar mr-2"></i>Full Reports
+                <a href="{{ route('stations.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-building mr-3"></i>Stations
+                </a>
+                <a href="{{ route('reports.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-chart-bar mr-3"></i>Full Reports
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="block">
                     @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    <button type="submit" class="w-full text-left px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-red-600 hover:to-rose-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Logout
                     </button>
                 </form>
             </nav>
@@ -187,41 +190,38 @@
                         @enderror
                     </div>
 
-                    <!-- Supplier and Unit -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="supplier_id" class="block text-sm font-medium text-gray-700 mb-2">Supplier</label>
-                            <select name="supplier_id" id="supplier_id"
-                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select a supplier</option>
-                                @foreach($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}" {{ old('supplier_id', $item->supplier_id) == $supplier->id ? 'selected' : '' }}>
-                                    {{ $supplier->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('supplier_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <!-- Station -->
+                    <div>
+                        <label for="station_id" class="block text-sm font-medium text-gray-700 mb-2">Station</label>
+                        <select name="station_id" id="station_id"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Main Central Station</option>
+                            @foreach($stations as $station)
+                            <option value="{{ $station->id }}" {{ old('station_id', $item->station_id) == $station->id ? 'selected' : '' }}>{{ $station->name }} ({{ $station->code }})</option>
+                            @endforeach
+                        </select>
+                        @error('station_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                        <div>
-                            <label for="unit" class="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
-                            <select name="unit" id="unit" required
-                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Select unit</option>
-                                @foreach($units as $unit)
-                                <option value="{{ $unit }}" {{ old('unit', $item->unit) == $unit ? 'selected' : '' }}>{{ ucfirst($unit) }}</option>
-                                @endforeach
-                                <!-- Always include box as an option -->
-                                @unless($units->contains('box'))
-                                <option value="box" {{ old('unit', $item->unit) == 'box' ? 'selected' : '' }}>Box</option>
-                                @endunless
-                            </select>
-                            @error('unit')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <!-- Unit -->
+                    <div>
+                        <label for="unit" class="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
+                        <select name="unit" id="unit" required
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select unit</option>
+                            @foreach($units as $unit)
+                            <option value="{{ $unit }}" {{ old('unit', $item->unit) == $unit ? 'selected' : '' }}>{{ ucfirst($unit) }}</option>
+                            @endforeach
+                            <!-- Always include box as an option -->
+                            @unless($units->contains('box'))
+                            <option value="box" {{ old('unit', $item->unit) == 'box' ? 'selected' : '' }}>Box</option>
+                            @endunless
+                        </select>
+                        @error('unit')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Pricing -->
@@ -275,6 +275,33 @@
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value="{{ old('date_acquired', $item->date_acquired ? $item->date_acquired->format('Y-m-d') : '') }}">
                             @error('date_acquired')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Condition and Life Span -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+                            <select name="condition" id="condition"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="serviceable" {{ old('condition', $item->condition ?? 'serviceable') == 'serviceable' ? 'selected' : '' }}>Serviceable</option>
+                                <option value="unserviceable" {{ old('condition', $item->condition) == 'unserviceable' ? 'selected' : '' }}>Unserviceable</option>
+                            </select>
+                            @error('condition')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="life_span_years" class="block text-sm font-medium text-gray-700 mb-2">Life Span (Years)</label>
+                            <input type="number" name="life_span_years" id="life_span_years" min="0"
+                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value="{{ old('life_span_years', $item->life_span_years) }}"
+                                placeholder="e.g., 5">
+                            <p class="text-xs text-gray-500 mt-1">Expected life span in years</p>
+                            @error('life_span_years')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -344,6 +371,22 @@
         // Calculate on page load if values exist
         document.addEventListener('DOMContentLoaded', function() {
             calculateTotalCost();
+        });
+
+        // Sidebar functionality
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('translate-x-full');
+            document.getElementById('sidebarOverlay').classList.remove('hidden');
+        });
+
+        document.getElementById('sidebarClose').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
         });
     </script>
 </body>

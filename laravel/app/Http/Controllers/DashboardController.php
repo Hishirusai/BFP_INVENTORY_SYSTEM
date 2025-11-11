@@ -11,13 +11,18 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Item::with('supplier');
+        // Main Central Station - only show items where station_id is null
+        $query = Item::with(['supplier', 'station'])
+            ->whereNull('station_id');
 
         // Search functionality
         if ($request->has('search') && $request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('sku', 'like', '%' . $request->search . '%')
-                ->orWhere('description', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('sku', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
 
         // Filter by unit if provided
@@ -27,15 +32,29 @@ class DashboardController extends Controller
 
         // Paginate items (10 per page)
         $items = $query->latest()->paginate(10);
+        
+        // Stats for Main Central Station only
         $suppliersCount = Supplier::count();
-        $itemsCount = Item::count();
-        $lowStockItems = Item::whereColumn('quantity_on_hand', '<=', 'reorder_level')->count();
-        $totalInventoryValue = Item::sum('total_cost');
+        $itemsCount = Item::whereNull('station_id')->count();
+        $lowStockItems = Item::whereNull('station_id')
+            ->whereColumn('quantity_on_hand', '<=', 'reorder_level')
+            ->count();
+        $totalInventoryValue = Item::whereNull('station_id')->sum('total_cost');
+        // Count unserviceable items (condition = unserviceable or expired by life span)
+        $unserviceableItems = Item::whereNull('station_id')
+            ->get()
+            ->filter(function($item) {
+                return $item->condition == 'unserviceable' || $item->isUnserviceableByLifespan();
+            })
+            ->count();
         $recentReports = Report::with(['item', 'user'])->latest()->limit(4)->get();
 
-        // Get all unique units for filter dropdown
-        $units = Item::select('unit')->distinct()->pluck('unit');
+        // Get all unique units for filter dropdown (Main Central Station only)
+        $units = Item::whereNull('station_id')
+            ->select('unit')
+            ->distinct()
+            ->pluck('unit');
 
-        return view('dashboard', compact('items', 'suppliersCount', 'itemsCount', 'lowStockItems', 'totalInventoryValue', 'recentReports', 'units'));
+        return view('dashboard', compact('items', 'suppliersCount', 'itemsCount', 'lowStockItems', 'totalInventoryValue', 'unserviceableItems', 'recentReports', 'units'));
     }
 }
