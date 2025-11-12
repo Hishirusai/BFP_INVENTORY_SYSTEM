@@ -91,8 +91,10 @@
         }
 
         .overflow-y-auto {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .overflow-y-auto::-webkit-scrollbar-track {
@@ -105,6 +107,123 @@
 
         .overflow-y-auto::-webkit-scrollbar-thumb:hover {
             display: none;
+        }
+
+        .compact-pagination,
+        .compact-pagination * {
+            font-size: 10px !important;
+        }
+
+        .compact-pagination nav {
+            display: inline-block !important;
+            background: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .compact-pagination nav ul,
+        .compact-pagination nav ul.pagination {
+            display: inline-flex !important;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            gap: 4px !important;
+            align-items: baseline !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+
+        .compact-pagination nav ul li,
+        .compact-pagination nav ul.pagination li {
+            margin: 0 !important;
+            padding: 0 !important;
+            list-style: none !important;
+            display: inline-block !important;
+        }
+
+        .compact-pagination nav ul li,
+        .compact-pagination nav ul.pagination li {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .compact-pagination nav ul li a,
+        .compact-pagination nav ul li span,
+        .compact-pagination nav ul.pagination li a,
+        .compact-pagination nav ul.pagination li span,
+        .compact-pagination a,
+        .compact-pagination span {
+            display: inline !important;
+            padding: 0px !important;
+            font-size: 10px !important;
+            line-height: 1.2 !important;
+            border-radius: 0 !important;
+            text-decoration: none !important;
+            border: none !important;
+            color: #374151 !important;
+            background-color: transparent !important;
+            background: transparent !important;
+            font-weight: normal !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            vertical-align: baseline !important;
+            box-shadow: none !important;
+        }
+
+        .compact-pagination nav ul li a,
+        .compact-pagination a {
+            color: #374151 !important;
+        }
+
+        .compact-pagination nav ul li a:hover,
+        .compact-pagination nav ul.pagination li a:hover {
+            color: #1f2937 !important;
+            text-decoration: underline !important;
+        }
+
+        .compact-pagination nav ul li.active span,
+        .compact-pagination nav ul.pagination li.active span {
+            background-color: transparent !important;
+            color: #374151 !important;
+            padding: 0px !important;
+            border-radius: 0 !important;
+            font-weight: bold !important;
+            text-decoration: none !important;
+            border: none !important;
+        }
+
+        .compact-pagination nav ul li.disabled span,
+        .compact-pagination nav ul.pagination li.disabled span {
+            color: #9ca3af !important;
+            background-color: transparent !important;
+            background: transparent !important;
+            cursor: not-allowed !important;
+            opacity: 0.5 !important;
+            padding: 0px !important;
+            text-decoration: none !important;
+            border: none !important;
+        }
+
+        .compact-pagination .pagination,
+        .compact-pagination .page-item,
+        .compact-pagination .page-link {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 10px !important;
+            color: #374151 !important;
+        }
+
+        .compact-pagination .page-item.active .page-link {
+            background: transparent !important;
+            border: none !important;
+            color: #374151 !important;
+            font-weight: bold !important;
         }
     </style>
 </head>
@@ -120,13 +239,13 @@
     </div>
 
     <!-- Top Navigation Bar -->
-    <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-4 flex justify-between items-center shadow-xl border-b-2 border-red-900">
-        <div class="flex items-center space-x-4">
-            <img src="/Img/Icon.png" alt="BFP Icon" class="h-10 w-10 rounded-lg shadow-lg ring-2 ring-white/20">
-            <h1 class="text-2xl font-bold tracking-wide">BFP INVENTORY SYSTEM</h1>
+    <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-2 flex justify-between items-center shadow-xl border-b-2 border-red-900">
+        <div class="flex items-center space-x-3">
+            <img src="/Img/Icon.png" alt="BFP Icon" class="h-8 w-8 rounded-lg shadow-lg ring-2 ring-white/20">
+            <h1 class="text-base font-bold tracking-wide">BFP INVENTORY SYSTEM</h1>
         </div>
-        <div class="flex items-center space-x-4">
-            <i id="sidebarToggle" class="fas fa-bars text-white text-xl cursor-pointer hover:text-blue-200 hover:scale-110 transition-transform duration-200 p-2 rounded-lg hover:bg-white/10"></i>
+        <div class="flex items-center space-x-3">
+            <i id="sidebarToggle" class="fas fa-bars text-white text-lg cursor-pointer hover:text-blue-200 hover:scale-110 transition-transform duration-200 p-1.5 rounded-lg hover:bg-white/10"></i>
         </div>
     </div>
 
@@ -163,232 +282,219 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
     <!-- Main Content -->
-    <div class="flex justify-center p-8 h-[calc(100vh-72px)] overflow-hidden">
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1780px] border border-white/20 flex flex-col h-full">
+    <div class="flex justify-center p-2 h-[calc(100vh-40px)] overflow-hidden mb-4">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1280px] border border-white/20 flex flex-col h-full">
             <!-- Header Section - Sticky -->
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
-                <div class="p-4">
+                <div class="p-1.5">
                     @if(session('success'))
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-3 py-2 rounded-lg mb-3 shadow-md flex items-center text-sm animate-pulse">
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs animate-pulse">
                         <i class="fas fa-check-circle mr-2 text-green-600"></i>{{ session('success') }}
                     </div>
                     @endif
 
                     @if(session('error'))
-                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 text-red-800 px-3 py-2 rounded-lg mb-3 shadow-md flex items-center text-sm">
+                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 text-red-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs">
                         <i class="fas fa-exclamation-circle mr-2 text-red-600"></i>{{ session('error') }}
                     </div>
                     @endif
 
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
+                    <div class="flex items-center justify-between mb-1">
+                        <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
                             <i class="fas fa-building mr-2 text-blue-600"></i>MAIN CENTRAL STATION - Inventory Management
                         </h2>
                         <form method="POST" action="{{ route('logout') }}" class="whitespace-nowrap">
                             @csrf
-                            <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1.5 rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
+                            <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1.5 rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-[11px]">
                                 <i class="fas fa-sign-out-alt mr-2"></i>Logout
                             </button>
                         </form>
                     </div>
 
                     <!-- Compact layout: Stats in one row, Reports and Action bar in another -->
-                    <div class="space-y-3">
+                    <div class="space-y-1">
                         <!-- Stats Cards - Single Row -->
-                        <div class="grid grid-cols-4 gap-3">
-                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
-                                <div>
-                                    <div class="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
-                                    <div class="text-xs text-blue-100 font-semibold uppercase tracking-wide flex items-center mt-1">
-                                        <i class="fas fa-box mr-1"></i>Items
-                                    </div>
+                        <div class="grid grid-cols-4 gap-1">
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-1 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
+                                <div class="text-base font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
+                                <div class="text-[10px] text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                    <i class="fas fa-box mr-1"></i>Items
                                 </div>
-                                <i class="fas fa-box text-blue-100 text-xl"></i>
                             </div>
-                            <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-3 border border-yellow-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
-                                <div>
-                                    <div class="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $lowStockItems }}</div>
-                                    <div class="text-xs text-yellow-100 font-semibold uppercase tracking-wide flex items-center mt-1">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock
-                                    </div>
+                            <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-1 border border-yellow-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
+                                <div class="text-base font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $lowStockItems }}</div>
+                                <div class="text-[10px] text-yellow-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock
                                 </div>
-                                <i class="fas fa-exclamation-triangle text-yellow-100 text-xl"></i>
                             </div>
-                            <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg p-3 border border-purple-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-lg font-bold text-white group-hover:scale-110 transition-transform duration-300 truncate">₱{{ number_format($totalInventoryValue, 0) }}</div>
-                                    <div class="text-xs text-purple-100 font-semibold uppercase tracking-wide flex items-center mt-1">
-                                        <i class="fas fa-dollar-sign mr-1"></i>Total Value
-                                    </div>
+                            <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg p-1 border border-purple-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
+                                <div class="text-[13px] font-bold text-white group-hover:scale-110 transition-transform duration-330 truncate">₱{{ number_format($totalInventoryValue, 0) }}</div>
+                                <div class="text-[10px] text-purple-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                    <i class="fas fa-dollar-sign mr-1"></i>Total Value
                                 </div>
-                                <i class="fas fa-dollar-sign text-purple-100 text-xl ml-2"></i>
                             </div>
-                            <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-lg p-3 border border-red-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
-                                <div>
-                                    <div class="text-2xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $unserviceableItems ?? 0 }}</div>
-                                    <div class="text-xs text-red-100 font-semibold uppercase tracking-wide flex items-center mt-1">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>Unserviceable
-                                    </div>
+                            <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-lg p-1 border border-red-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
+                                <div class="text-base font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $unserviceableItems ?? 0 }}</div>
+                                <div class="text-[10px] text-red-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>Unserviceable
                                 </div>
-                                <i class="fas fa-exclamation-circle text-red-100 text-xl"></i>
                             </div>
                         </div>
 
                         <!-- Action Bar - Compact -->
-                        <div class="flex flex-wrap items-center gap-2">
-                                <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
-                                    <i class="fas fa-plus mr-1.5"></i>Add Item
-                                </a>
-                                <a href="{{ route('items.transfer.create') }}" class="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-3 py-1.5 rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
-                                    <i class="fas fa-exchange-alt mr-1.5"></i>Transfer Item
-                                </a>
-                                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-2 flex-1 min-w-[200px]">
-                                    <input type="text" name="search" placeholder="Search..."
-                                        value="{{ request('search') }}"
-                                        class="flex-1 border-2 border-gray-300 rounded-l-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200 shadow-sm">
-                                    <select name="unit" class="border-2 border-gray-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200 shadow-sm bg-white">
-                                        <option value="">All Units</option>
-                                        @foreach($units as $unit)
-                                        <option value="{{ $unit }}" {{ request('unit') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
-                                        @endforeach
-                                        @unless($units->contains('box'))
-                                        <option value="box" {{ request('unit') == 'box' ? 'selected' : '' }}>box</option>
-                                        @endunless
-                                    </select>
-                                    <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-r-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </form>
-                                <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-3 py-1.5 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl font-semibold text-sm">
-                                    <i class="fas fa-times mr-1.5"></i>Clear
-                                </a>
-                                <a href="{{ route('items.export') }}" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-sm">
-                                    <i class="fas fa-download mr-1.5"></i>Export
-                                </a>
-                            </div>
+                        <div class="flex flex-wrap items-center gap-1">
+                            <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
+                                <i class="fas fa-plus mr-1.5"></i>Add Item
+                            </a>
+                            <a href="{{ route('items.transfer.create') }}" class="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-2 py-1.5 rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
+                                <i class="fas fa-exchange-alt mr-1.5"></i>Transfer Item
+                            </a>
+                            <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-1 flex-1 min-w-[200px]">
+                                <input type="text" name="search" placeholder="Search..."
+                                    value="{{ request('search') }}"
+                                    class="flex-1 border-2 border-gray-300 rounded-l-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs transition-all duration-200 shadow-sm">
+                                <select name="unit" class="border-2 border-gray-300 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs transition-all duration-200 shadow-sm bg-white">
+                                    <option value="">All Units</option>
+                                    @foreach($units as $unit)
+                                    <option value="{{ $unit }}" {{ request('unit') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                                    @endforeach
+                                    @unless($units->contains('box'))
+                                    <option value="box" {{ request('unit') == 'box' ? 'selected' : '' }}>box</option>
+                                    @endunless
+                                </select>
+                                <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-r-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                            <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-2.5 py-1.5 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl font-semibold text-xs">
+                                <i class="fas fa-times mr-1.5"></i>Clear
+                            </a>
+                            <a href="{{ route('items.export') }}" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-2.5 py-1.5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
+                                <i class="fas fa-download mr-1.5"></i>Export
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Inventory Table -->
-            <div class="overflow-x-auto overflow-hidden rounded-b-2xl flex-1 min-h-0">
+            <div class="overflow-x-auto overflow-hidden rounded-b-xl flex-1 min-h-0">
                 <table class="w-full">
                     <thead class="sticky top-0 z-10">
                         <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 text-white shadow-lg">
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-tag mr-2"></i>Item Name
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-tag mr-1.5 text-[10px]"></i>Item Name
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-calendar mr-2"></i>Date Acquired
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-calendar mr-1.5 text-[10px]"></i>Date Acquired
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-boxes mr-2"></i>Quantity
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-boxes mr-1.5 text-[10px]"></i>Quantity
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-dollar-sign mr-2"></i>Unit Cost
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-dollar-sign mr-1.5 text-[10px]"></i>Unit Cost
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-money-bill-wave mr-2"></i>Total Cost
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-money-bill-wave mr-1.5 text-[10px]"></i>Total Cost
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-info-circle mr-2"></i>Item Status
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-info-circle mr-1.5 text-[10px]"></i>Item Status
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-check-circle mr-2"></i>Condition
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-check-circle mr-1.5 text-[10px]"></i>Condition
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-clock mr-2"></i>Life Span
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-clock mr-1.5 text-[10px]"></i>Life Span
                             </th>
-                            <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">
-                                <i class="fas fa-cog mr-2"></i>Actions
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-cog mr-1.5 text-[10px]"></i>Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($items as $index => $item)
                         <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
-                            <td class="px-6 py-4 text-sm text-gray-900">
+                            <td class="px-3 py-2 text-[10px] text-gray-900">
                                 <span class="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline font-semibold item-details-link transition-colors duration-200" data-item-id="{{ $item->id }}">{{ $item->name }}</span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-700">
-                                <i class="fas fa-calendar-alt mr-2 text-gray-400"></i>{{ $item->date_acquired ? $item->date_acquired->format('M d, Y') : 'N/A' }}
+                            <td class="px-3 py-2 text-[10px] text-gray-700">
+                                <i class="fas fa-calendar-alt mr-2 text-gray-400 text-[9px]"></i>{{ $item->date_acquired ? $item->date_acquired->format('M d, Y') : 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 font-semibold">
-                                <i class="fas fa-cubes mr-2 text-blue-500"></i>{{ $item->quantity_on_hand }} {{ $item->unit }}
+                            <td class="px-3 py-2 text-[10px] text-gray-900 font-semibold">
+                                <i class="fas fa-cubes mr-2 text-blue-500 text-[9px]"></i>{{ $item->quantity_on_hand }} {{ $item->unit }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 font-bold text-green-700">
-                                <i class="fas fa-coins mr-1"></i>₱{{ number_format($item->unit_cost, 2) }}
+                            <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-green-700">
+                                <i class="fas fa-coins mr-1 text-[9px]"></i>₱{{ number_format($item->unit_cost, 2) }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900 font-bold text-purple-700">
-                                <i class="fas fa-money-bill mr-1"></i>₱{{ number_format($item->total_cost, 2) }}
+                            <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-purple-700">
+                                <i class="fas fa-money-bill mr-1 text-[9px]"></i>₱{{ number_format($item->total_cost, 2) }}
                             </td>
-                            <td class="px-6 py-4 text-sm">
-                                <span class="px-3 py-1.5 rounded-full text-xs font-bold shadow-sm
+                            <td class="px-3 py-2 text-[10px]">
+                                <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
                                     @if($item->status == 'active') bg-gradient-to-r from-green-400 to-emerald-500 text-white
                                     @elseif($item->status == 'low_stock') bg-gradient-to-r from-yellow-400 to-orange-500 text-white
                                     @else bg-gradient-to-r from-red-400 to-rose-500 text-white
                                     @endif">
-                                    <i class="fas fa-circle text-[6px] mr-1"></i>{{ ucfirst($item->status) }}
+                                    <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->status) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm">
+                            <td class="px-3 py-2 text-[10px]">
                                 @php
-                                    $isUnserviceable = ($item->condition == 'unserviceable') || ($item->isUnserviceableByLifespan());
+                                $isUnserviceable = ($item->condition == 'unserviceable') || ($item->isUnserviceableByLifespan());
                                 @endphp
-                                <span class="px-3 py-1.5 rounded-full text-xs font-bold shadow-sm
+                                <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
                                     @if($isUnserviceable) bg-gradient-to-r from-red-400 to-rose-500 text-white
                                     @else bg-gradient-to-r from-green-400 to-emerald-500 text-white
                                     @endif">
-                                    <i class="fas fa-circle text-[6px] mr-1"></i>{{ ucfirst($item->condition ?? 'serviceable') }}
+                                    <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->condition ?? 'serviceable') }}
                                     @if($isUnserviceable && $item->condition != 'unserviceable')
-                                        <i class="fas fa-exclamation-triangle ml-1" title="Unserviceable due to life span"></i>
+                                    <i class="fas fa-exclamation-triangle ml-1 text-[9px]" title="Unserviceable due to life span"></i>
                                     @endif
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm">
+                            <td class="px-3 py-2 text-[10px]">
                                 @if($item->life_span_years && $item->date_acquired)
-                                    @php
-                                        $yearsSinceAcquired = $item->date_acquired->diffInYears(now());
-                                        $remainingYears = max(0, $item->life_span_years - $yearsSinceAcquired);
-                                        $percentage = min(100, ($yearsSinceAcquired / $item->life_span_years) * 100);
-                                        $isExpired = $yearsSinceAcquired >= $item->life_span_years;
-                                    @endphp
-                                    <div class="flex items-center space-x-2">
-                                        <div class="flex-1">
-                                            <div class="text-xs text-gray-600 mb-1">
-                                                {{ $yearsSinceAcquired }} / {{ $item->life_span_years }} years
-                                                @if($isExpired)
-                                                    <span class="text-red-600 font-bold">(Expired)</span>
-                                                @else
-                                                    <span class="text-gray-500">({{ $remainingYears }} remaining)</span>
-                                                @endif
-                                            </div>
-                                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                                <div class="h-2 rounded-full transition-all duration-300
-                                                    @if($isExpired) bg-gradient-to-r from-red-500 to-rose-600
-                                                    @elseif($percentage > 75) bg-gradient-to-r from-yellow-500 to-orange-500
-                                                    @else bg-gradient-to-r from-green-500 to-emerald-600
-                                                    @endif" style="width: {{ $percentage }}%"></div>
+                                @php
+                                $yearsSinceAcquired = $item->date_acquired->diffInYears(now());
+                                $remainingYears = max(0, $item->life_span_years - $yearsSinceAcquired);
+                                $percentage = min(100, ($yearsSinceAcquired / $item->life_span_years) * 100);
+                                $isExpired = $yearsSinceAcquired >= $item->life_span_years;
+                                @endphp
+                                <div class="flex items-center space-x-2">
+                                    <div class="flex-1">
+                                        <div class="text-[9px] text-gray-600 mb-1">
+                                            {{ $yearsSinceAcquired }} / {{ $item->life_span_years }} years
+                                            @if($isExpired)
+                                            <span class="text-red-600 font-bold text-[9px]">(Expired)</span>
+                                            @else
+                                            <span class="text-gray-500 text-[9px]">({{ $remainingYears }} remaining)</span>
+                                            @endif
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="h-1.5 rounded-full transition-all duration-300 
+                                                {{ $isExpired ? 'bg-gradient-to-r from-red-500 to-rose-600' : ($percentage > 75 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-green-500 to-emerald-600') }}"
+                                                style="width: {{ $percentage }}%">
                                             </div>
                                         </div>
-                                        @if($isExpired)
-                                            <i class="fas fa-exclamation-triangle text-red-600 text-lg" title="Item has exceeded its life span"></i>
-                                        @endif
                                     </div>
+                                    @if($isExpired)
+                                    <i class="fas fa-exclamation-triangle text-red-600 text-[9px]" title="Item has exceeded its life span"></i>
+                                    @endif
+                                </div>
                                 @else
-                                    <span class="text-gray-400 text-xs">N/A</span>
+                                <span class="text-gray-400 text-[9px]">N/A</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-sm">
-                                <div class="flex space-x-2">
-                                    <a href="{{ route('items.edit', $item) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
-                                        <i class="fas fa-edit mr-1"></i>Edit
+                            <td class="px-3 py-2 text-[10px]">
+                                <div class="flex space-x-1.5">
+                                    <a href="{{ route('items.edit', $item) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
+                                        <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
                                     </a>
                                     <form action="{{ route('items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this item?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-3 py-1.5 rounded-lg text-xs hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
-                                            <i class="fas fa-trash mr-1"></i>Delete
+                                        <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
+                                            <i class="fas fa-trash mr-1 text-[8px]"></i>Delete
                                         </button>
                                     </form>
                                 </div>
@@ -412,13 +518,35 @@
 
             <!-- Pagination -->
             @if($items->hasPages())
-            <div class="flex-shrink-0 p-6 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-700 font-semibold">
-                        <i class="fas fa-list mr-2 text-blue-600"></i>Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
+            <div class="flex-shrink-0 p-1 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination mt-2 mb-4 rounded-b-xl">
+                <div class="flex items-center justify-between gap-2 h-full">
+                    <div class="text-sm text-gray-800 font-bold whitespace-nowrap">
+                        <i class="fas fa-list mr-1 text-blue-600 text-sm"></i>Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
                     </div>
-                    <div>
-                        {{ $items->links() }}
+                    <div class="compact-pagination flex items-center space-x-1">
+                        @if ($items->onFirstPage())
+                        <span class="relative inline-flex items-center px-2 py-1 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
+                            &lt;
+                        </span>
+                        @else
+                        <a href="{{ $items->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-1 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
+                            &lt;
+                        </a>
+                        @endif
+                        
+                        <div class="px-1.5 py-0.5 text-sm font-bold text-gray-700">
+                            {{ $items->currentPage() }} of {{ $items->lastPage() }}
+                        </div>
+
+                        @if ($items->hasMorePages())
+                        <a href="{{ $items->nextPageUrl() }}" class="relative -ml-px inline-flex items-center px-2 py-1 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
+                            &gt;
+                        </a>
+                        @else
+                        <span class="relative -ml-px inline-flex items-center px-2 py-1 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
+                            &gt;
+                        </span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -467,9 +595,9 @@
                         'inactive': 'from-red-400 to-rose-500'
                     };
                     const statusColor = statusColors[item.status] || 'from-gray-400 to-gray-500';
-                    
+
                     const content = `
-                        <div class="space-y-4">
+                        <div class="space-y-2">
                             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500">
                                 <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-tag mr-2 text-blue-600"></i>Item Name</h4>
                                 <p class="text-gray-900 font-semibold text-lg">${item.name}</p>
@@ -589,5 +717,4 @@
     </script>
 </body>
 
-</html>
 </html>
