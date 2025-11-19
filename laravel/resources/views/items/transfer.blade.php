@@ -90,7 +90,7 @@
 
     <!-- Main Content -->
     <div class="flex justify-center p-8">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-[1790px]">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-[10px]">
             <!-- Header Section -->
             <div class="p-6 border-b">
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">TRANSFER ITEM</h2>
