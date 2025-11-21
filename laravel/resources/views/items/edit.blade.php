@@ -158,6 +158,7 @@
                     @csrf
                     @method('PUT')
 
+                    <input type="hidden" name="redirect_to" value="{{ request('redirect_to') }}">
                     <!-- Basic Information -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

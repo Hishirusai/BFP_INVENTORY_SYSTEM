@@ -444,8 +444,25 @@
                                 </span>
                             </td>
                             
-                            <td class="px-3 py-2 text-[10px] text-gray-500 whitespace-nowrap">
-                                N/A
+                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
+                                @php
+                                    $condition = $item->condition ?? 'serviceable';
+                                    $isExpiredByDate = false;
+                                    if($item->life_span_years && $item->date_acquired) {
+                                        $expirationDate = $item->date_acquired->copy()->addYears($item->life_span_years);
+                                        $isExpiredByDate = now()->greaterThanOrEqualTo($expirationDate);
+                                    }
+                                    $isUnserviceable = ($condition === 'unserviceable') || $isExpiredByDate;
+                                @endphp
+                                <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
+                                    @if($isUnserviceable) bg-gradient-to-r from-red-400 to-rose-500 text-white
+                                    @else bg-gradient-to-r from-green-400 to-emerald-500 text-white
+                                    @endif">
+                                    <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($condition) }}
+                                    @if($isExpiredByDate && $condition != 'unserviceable')
+                                    <i class="fas fa-exclamation-triangle ml-1" title="Unserviceable due to life span"></i>
+                                    @endif
+                                </span>
                             </td>
                             
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
@@ -492,9 +509,8 @@
                                         <div class="h-1.5 rounded-full transition-all duration-300 {{ $barColorClass }}" style="width: {{ $percentage }}%"></div>
                                     </div>
                                 </div>
-                        
                                 @else
-                                    <span class="text-gray-400 text-[9px]">N/A</span>
+                                <span class="text-gray-400 text-[9px]">N/A</span>
                                 @endif
                             </td>
                             
@@ -530,7 +546,7 @@
             </div>
 
             @if($items->hasPages())
-            <div class="flex-shrink-0 p-1 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination rounded-b-2xl">
+            <div class="flex-shrink-0 p-1.5 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination rounded-b-2xl">
 
                 <div class="flex items-center justify-between gap-2 h-full">
                     <div class="text-sm text-gray-800 font-bold whitespace-nowrap">

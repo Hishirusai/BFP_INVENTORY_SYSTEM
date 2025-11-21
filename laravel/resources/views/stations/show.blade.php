@@ -97,6 +97,27 @@
 </head>
 
 <body class="h-screen overflow-hidden">
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none">
+        @if(session('success'))
+            <div class="toast-message bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-lg shadow-xl border-2 border-green-400 transform transition-all duration-300 opacity-0 translate-x-10 pointer-events-auto" data-duration="8000">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-3 text-lg"></i>
+                    <span class="font-bold text-sm">{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="toast-message bg-gradient-to-r from-red-500 to-rose-600 text-white p-4 rounded-lg shadow-xl border-2 border-red-400 transform transition-all duration-300 opacity-0 translate-x-10 pointer-events-auto" data-duration="8000">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3 text-lg"></i>
+                    <span class="font-bold text-sm">{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
+    </div>
+
     <div class="carousel-container">
         <div class="carousel-image" style="background-image: url('/Img/Carousel1.png');" data-image="1"></div>
         <div class="carousel-image" style="background-image: url('/Img/Carousel2.png');" data-image="2"></div>
@@ -153,12 +174,6 @@
             
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
                 <div class="p-1.5">
-                    @if(session('success'))
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs animate-pulse">
-                        <i class="fas fa-check-circle mr-2 text-green-600"></i>{{ session('success') }}
-                    </div>
-                    @endif
-
                     <div class="flex items-center justify-between mb-1">
                         <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
                             <i class="fas fa-building mr-2 text-blue-600"></i>{{ $station->name }} - Inventory Management
@@ -408,6 +423,25 @@
     </div>
 
     <script>
+        // --- Pop Notification Functionality (Added) ---
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.toast-message').forEach(toast => {
+                const duration = parseInt(toast.getAttribute('data-duration')) || 5000;
+                setTimeout(() => {
+                    toast.classList.remove('opacity-0', 'translate-x-10');
+                    toast.classList.add('opacity-100', 'translate-x-0');
+                }, 50); 
+
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-x-0');
+                    toast.classList.add('opacity-0', 'translate-x-10');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }, duration); 
+            });
+        });
+
         // Item details modal functionality
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.item-details-link').forEach(link => {
