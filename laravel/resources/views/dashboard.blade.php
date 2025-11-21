@@ -229,7 +229,27 @@
 </head>
 
 <body class="h-screen overflow-hidden">
-    <!-- Carousel Background -->
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none">
+    @if(session('success'))
+        <div class="toast-message bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-lg shadow-xl border-2 border-green-400 transform transition-all duration-300 opacity-0 translate-x-10 pointer-events-auto" data-duration="8000">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-3 text-lg"></i>
+                <span class="font-bold text-sm">{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="toast-message bg-gradient-to-r from-red-500 to-rose-600 text-white p-4 rounded-lg shadow-xl border-2 border-red-400 transform transition-all duration-300 opacity-0 translate-x-10 pointer-events-auto" data-duration="8000">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-3 text-lg"></i>
+                <span class="font-bold text-sm">{{ session('error') }}</span>
+            </div>
+        </div>
+    @endif
+    </div>
+
     <div class="carousel-container">
         <div class="carousel-image" style="background-image: url('/Img/Carousel1.png');" data-image="1"></div>
         <div class="carousel-image" style="background-image: url('/Img/Carousel2.png');" data-image="2"></div>
@@ -238,7 +258,6 @@
         <div class="carousel-image" style="background-image: url('/Img/Carousel5.png');" data-image="5"></div>
     </div>
 
-    <!-- Top Navigation Bar -->
     <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-2 flex justify-between items-center shadow-xl border-b-2 border-red-900">
         <div class="flex items-center space-x-3">
             <img src="/Img/Icon.png" alt="BFP Icon" class="h-8 w-8 rounded-lg shadow-lg ring-2 ring-white/20">
@@ -249,7 +268,6 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl border-l border-gray-700">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-700">
@@ -278,26 +296,12 @@
         </div>
     </div>
 
-    <!-- Sidebar Overlay -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
-    <!-- Main Content -->
     <div class="flex justify-center p-2 h-[calc(100vh-40px)] overflow-hidden mb-4">
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1280px] border border-white/20 flex flex-col h-full">
-            <!-- Header Section - Sticky -->
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
                 <div class="p-1.5">
-                    @if(session('success'))
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs animate-pulse">
-                        <i class="fas fa-check-circle mr-2 text-green-600"></i>{{ session('success') }}
-                    </div>
-                    @endif
-
-                    @if(session('error'))
-                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 text-red-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs">
-                        <i class="fas fa-exclamation-circle mr-2 text-red-600"></i>{{ session('error') }}
-                    </div>
-                    @endif
 
                     <div class="flex items-center justify-between mb-1">
                         <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
@@ -311,37 +315,34 @@
                         </form>
                     </div>
 
-                    <!-- Compact layout: Stats in one row, Reports and Action bar in another -->
-                    <div class="space-y-1">
-                        <!-- Stats Cards - Single Row -->
+                    <div class="space-y-3">
                         <div class="grid grid-cols-4 gap-1">
                             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-1 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-base font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
-                                <div class="text-[10px] text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
+                                <div class="text-[15px] text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-box mr-1"></i>Items
                                 </div>
                             </div>
                             <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-1 border border-yellow-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-base font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $lowStockItems }}</div>
-                                <div class="text-[10px] text-yellow-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $lowStockItems }}</div>
+                                <div class="text-[15px] text-yellow-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock
                                 </div>
                             </div>
                             <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg p-1 border border-purple-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-[13px] font-bold text-white group-hover:scale-110 transition-transform duration-330 truncate">₱{{ number_format($totalInventoryValue, 0) }}</div>
-                                <div class="text-[10px] text-purple-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-330 truncate">₱{{ number_format($totalInventoryValue, 0) }}</div>
+                                <div class="text-[15px] text-purple-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-dollar-sign mr-1"></i>Total Value
                                 </div>
                             </div>
                             <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-lg p-1 border border-red-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-base font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $unserviceableItems ?? 0 }}</div>
-                                <div class="text-[10px] text-red-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
+                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $unserviceableItems ?? 0 }}</div>
+                                <div class="text-[15px] text-red-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>Unserviceable
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Action Bar - Compact -->
                         <div class="flex flex-wrap items-center gap-1">
                             <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
                                 <i class="fas fa-plus mr-1.5"></i>Add Item
@@ -377,59 +378,63 @@
                 </div>
             </div>
 
-            <!-- Inventory Table -->
-            <div class="overflow-x-auto overflow-hidden rounded-b-xl flex-1 min-h-0">
-                <table class="w-full">
+            <div class="overflow-x-auto overflow-y-auto flex-1 min-h-0">
+                <table class="w-full min-w-[1200px]">
                     <thead class="sticky top-0 z-10">
-                        <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 text-white shadow-lg">
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-tag mr-1.5 text-[10px]"></i>Item Name
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-calendar mr-1.5 text-[10px]"></i>Date Acquired
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-boxes mr-1.5 text-[10px]"></i>Quantity
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-dollar-sign mr-1.5 text-[10px]"></i>Unit Cost
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-money-bill-wave mr-1.5 text-[10px]"></i>Total Cost
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-info-circle mr-1.5 text-[10px]"></i>Item Status
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-check-circle mr-1.5 text-[10px]"></i>Condition
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-clock mr-1.5 text-[10px]"></i>Life Span
-                            </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-cog mr-1.5 text-[10px]"></i>Actions
-                            </th>
-                        </tr>
-                    </thead>
+    <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 text-white shadow-lg">
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-tag mr-1.5"></i>Item Name
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-calendar mr-1.5"></i>Date Acquired
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-boxes mr-1.5"></i>Quantity
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-dollar-sign mr-1.5"></i>Unit Cost
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-money-bill-wave mr-1.5"></i>Total Cost
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-info-circle mr-1.5"></i>Item Status
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-check-circle mr-1.5"></i>Condition
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-clock mr-1.5"></i>Life Span
+        </th>
+        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
+            <i class="fas fa-cog mr-1.5"></i>Actions
+        </th>
+    </tr>
+</thead>
                     <tbody>
                         @forelse($items as $index => $item)
                         <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
-                            <td class="px-3 py-2 text-[10px] text-gray-900">
-                                <span class="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline font-semibold item-details-link transition-colors duration-200" data-item-id="{{ $item->id }}">{{ $item->name }}</span>
+                            <td class="px-3 py-2 text-gray-900">
+                                <span class="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline font-bold text-sm item-details-link transition-colors duration-200" data-item-id="{{ $item->id }}">{{ $item->name }}</span>
                             </td>
-                            <td class="px-3 py-2 text-[10px] text-gray-700">
+                            
+                            <td class="px-3 py-2 text-[10px] text-gray-700 whitespace-nowrap">
                                 <i class="fas fa-calendar-alt mr-2 text-gray-400 text-[9px]"></i>{{ $item->date_acquired ? $item->date_acquired->format('M d, Y') : 'N/A' }}
                             </td>
-                            <td class="px-3 py-2 text-[10px] text-gray-900 font-semibold">
+                            
+                            <td class="px-3 py-2 text-[10px] text-gray-900 font-semibold whitespace-nowrap">
                                 <i class="fas fa-cubes mr-2 text-blue-500 text-[9px]"></i>{{ $item->quantity_on_hand }} {{ $item->unit }}
                             </td>
-                            <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-green-700">
+                            
+                            <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-green-700 whitespace-nowrap">
                                 <i class="fas fa-coins mr-1 text-[9px]"></i>₱{{ number_format($item->unit_cost, 2) }}
                             </td>
-                            <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-purple-700">
+                            
+                            <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-purple-700 whitespace-nowrap">
                                 <i class="fas fa-money-bill mr-1 text-[9px]"></i>₱{{ number_format($item->total_cost, 2) }}
                             </td>
-                            <td class="px-3 py-2 text-[10px]">
+                            
+                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
                                     @if($item->status == 'active') bg-gradient-to-r from-green-400 to-emerald-500 text-white
                                     @elseif($item->status == 'low_stock') bg-gradient-to-r from-yellow-400 to-orange-500 text-white
@@ -438,54 +443,62 @@
                                     <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->status) }}
                                 </span>
                             </td>
-                            <td class="px-3 py-2 text-[10px]">
-                                @php
-                                $isUnserviceable = ($item->condition == 'unserviceable') || ($item->isUnserviceableByLifespan());
-                                @endphp
-                                <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
-                                    @if($isUnserviceable) bg-gradient-to-r from-red-400 to-rose-500 text-white
-                                    @else bg-gradient-to-r from-green-400 to-emerald-500 text-white
-                                    @endif">
-                                    <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->condition ?? 'serviceable') }}
-                                    @if($isUnserviceable && $item->condition != 'unserviceable')
-                                    <i class="fas fa-exclamation-triangle ml-1 text-[9px]" title="Unserviceable due to life span"></i>
-                                    @endif
-                                </span>
+                            
+                            <td class="px-3 py-2 text-[10px] text-gray-500 whitespace-nowrap">
+                                N/A
                             </td>
-                            <td class="px-3 py-2 text-[10px]">
+                            
+                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 @if($item->life_span_years && $item->date_acquired)
                                 @php
-                                $yearsSinceAcquired = $item->date_acquired->diffInYears(now());
-                                $remainingYears = max(0, $item->life_span_years - $yearsSinceAcquired);
-                                $percentage = min(100, ($yearsSinceAcquired / $item->life_span_years) * 100);
-                                $isExpired = $yearsSinceAcquired >= $item->life_span_years;
+                                    $expirationDate = $item->date_acquired->copy()->addYears($item->life_span_years);
+                                    $diff = now()->diff($expirationDate);
+                                    $isExpired = now()->greaterThanOrEqualTo($expirationDate);
+
+                                    if ($isExpired) {
+                                        $timePassed = $expirationDate->diffForHumans(null, true);
+                                        $displayText = "EXPIRED ({$timePassed} ago)";
+                                        $percentage = 100;
+                                    } else {
+                                        $remainingYears = $diff->y;
+                                        $remainingMonths = $diff->m;
+                                        if ($remainingYears > 0) {
+                                            $displayText = "{$remainingYears} YRS, {$remainingMonths} MTHS left";
+                                        } elseif ($remainingMonths > 0) {
+                                            $displayText = "{$remainingMonths} MTHS left";
+                                        } else {
+                                            $displayText = "< 1 Month left";
+                                        }
+                                        $totalDays = $item->life_span_years * 365.25;
+                                        $daysPassed = $item->date_acquired->diffInDays(now());
+                                        $percentage = min(100, ($daysPassed / $totalDays) * 100);
+                                    }
+    
+                                    $barColorClass = 'bg-gradient-to-r from-green-500 to-emerald-600';
+                                    if ($isExpired) {
+                                        $barColorClass = 'bg-gradient-to-r from-red-500 to-rose-600';
+                                    } elseif ($percentage > 75) {
+                                        $barColorClass = 'bg-gradient-to-r from-yellow-500 to-orange-500';
+                                    }
                                 @endphp
-                                <div class="flex items-center space-x-2">
-                                    <div class="flex-1">
-                                        <div class="text-[9px] text-gray-600 mb-1">
-                                            {{ $yearsSinceAcquired }} / {{ $item->life_span_years }} years
-                                            @if($isExpired)
-                                            <span class="text-red-600 font-bold text-[9px]">(Expired)</span>
-                                            @else
-                                            <span class="text-gray-500 text-[9px]">({{ $remainingYears }} remaining)</span>
-                                            @endif
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                            <div class="h-1.5 rounded-full transition-all duration-300 
-                                                {{ $isExpired ? 'bg-gradient-to-r from-red-500 to-rose-600' : ($percentage > 75 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-green-500 to-emerald-600') }}"
-                                                style="width: {{ $percentage }}%">
-                                            </div>
-                                        </div>
+
+                                <div class="flex flex-col justify-center">
+                                    <div class="text-[9px] text-gray-600 mb-1 font-semibold">
+                                        <span class="{{ $isExpired ? 'text-red-600' : 'text-gray-500' }} font-bold text-[8px]">
+                                            {{ $displayText }}
+                                        </span>
                                     </div>
-                                    @if($isExpired)
-                                    <i class="fas fa-exclamation-triangle text-red-600 text-[9px]" title="Item has exceeded its life span"></i>
-                                    @endif
+                                    <div class="w-24 bg-gray-200 rounded-full h-1.5 border border-gray-100" title="Life span progress: {{ number_format($percentage, 2) }}%">
+                                        <div class="h-1.5 rounded-full transition-all duration-300 {{ $barColorClass }}" style="width: {{ $percentage }}%"></div>
+                                    </div>
                                 </div>
+                        
                                 @else
-                                <span class="text-gray-400 text-[9px]">N/A</span>
+                                    <span class="text-gray-400 text-[9px]">N/A</span>
                                 @endif
                             </td>
-                            <td class="px-3 py-2 text-[10px]">
+                            
+                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 <div class="flex space-x-1.5">
                                     <a href="{{ route('items.edit', $item) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
                                         <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
@@ -516,9 +529,9 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             @if($items->hasPages())
-            <div class="flex-shrink-0 p-1 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination mt-2 mb-4 rounded-b-xl">
+            <div class="flex-shrink-0 p-1 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination rounded-b-2xl">
+
                 <div class="flex items-center justify-between gap-2 h-full">
                     <div class="text-sm text-gray-800 font-bold whitespace-nowrap">
                         <i class="fas fa-list mr-1 text-blue-600 text-sm"></i>Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
@@ -551,12 +564,9 @@
                 </div>
             </div>
             @endif
-
-            <!-- Stats Footer - Removed since we moved it to the top -->
         </div>
     </div>
 
-    <!-- Item Details Modal -->
     <div id="itemDetailsModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-2 border-gray-200 transform transition-all duration-300 scale-95" id="modalContent">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
@@ -568,12 +578,33 @@
                 </button>
             </div>
             <div id="itemDetailsContent" class="max-h-[70vh] overflow-y-auto">
-                <!-- Item details will be loaded here -->
-            </div>
+                </div>
         </div>
     </div>
 
     <script>
+
+    // --- Pop Notification Functionality For Aesthetics HAAHHAAHHA---
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toast-message').forEach(toast => {
+        const duration = parseInt(toast.getAttribute('data-duration')) || 5000;
+        setTimeout(() => {
+            toast.classList.remove('opacity-0', 'translate-x-10');
+            toast.classList.add('opacity-100', 'translate-x-0');
+        }, 50); 
+
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-x-0');
+            toast.classList.add('opacity-0', 'translate-x-10');
+            
+        setTimeout(() => {
+            toast.remove();
+                }, 300);
+            }, duration); 
+            });
+        });
+
+
         // Add event listeners to item details links
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.item-details-link').forEach(link => {
@@ -648,7 +679,6 @@
                 })
                 .catch(error => {
                     console.error('Error fetching item details:', error);
-                    // Fallback to showing basic info from the table data
                     alert('Error loading item details. Please try again.');
                 });
         }
@@ -692,12 +722,9 @@
         const totalImages = 5;
 
         function showImage(imageNumber) {
-            // Remove active class from all images
             document.querySelectorAll('.carousel-image').forEach(img => {
                 img.classList.remove('active');
             });
-
-            // Add active class to current image
             const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
             if (currentImg) {
                 currentImg.classList.add('active');
@@ -709,12 +736,10 @@
             showImage(currentImage);
         }
 
-        // Initialize carousel
         document.addEventListener('DOMContentLoaded', function() {
-            showImage(1); // Show first image
-            setInterval(nextImage, 5000); // Change every 5 seconds
+            showImage(1);
+            setInterval(nextImage, 5000);
         });
     </script>
 </body>
-
 </html>
