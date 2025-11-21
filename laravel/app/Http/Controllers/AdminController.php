@@ -94,10 +94,21 @@ class AdminController extends Controller
      */
     public function updateUserEmail(Request $request, User $user): RedirectResponse
     {
+        // 1. Validate Inputs
         $request->validate([
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'admin_password' => 'required', // Ensure admin password is sent
         ]);
 
+        // 2. SECURITY CHECK: Verify the Admin's Password
+        if (!Hash::check($request->admin_password, Auth::user()->password)) {
+            // Return back with error bag (for the input field) AND session error (for the popup)
+            return back()
+                ->withErrors(['admin_password' => 'Incorrect admin password provided.'])
+                ->with('error', 'Security Check Failed: Incorrect Password.');
+        }
+
+        // 3. Perform Update
         $user->update(['email' => $request->email]);
 
         return redirect()->back()->with('success', 'User email updated successfully!');
@@ -108,10 +119,21 @@ class AdminController extends Controller
      */
     public function updateUserPassword(Request $request, User $user): RedirectResponse
     {
+        // 1. Validate Inputs
         $request->validate([
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'admin_password' => 'required', // Ensure admin password is sent
         ]);
 
+        // 2. SECURITY CHECK: Verify the Admin's Password
+        if (!Hash::check($request->admin_password, Auth::user()->password)) {
+            // Return back with error bag (for the input field) AND session error (for the popup)
+            return back()
+                ->withErrors(['admin_password' => 'Incorrect admin password provided.'])
+                ->with('error', 'Security Check Failed: Incorrect Password.');
+        }
+
+        // 3. Perform Update
         $user->update(['password' => Hash::make($request->password)]);
 
         return redirect()->back()->with('success', 'User password updated successfully!');

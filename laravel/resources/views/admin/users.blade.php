@@ -21,24 +21,6 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-        }
-    </style>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'montserrat': ['Montserrat', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
             background-image: url('/Img/Bg.png');
             background-size: cover;
             background-attachment: fixed;
@@ -103,10 +85,44 @@
             background: linear-gradient(to bottom, #2563eb, #1d4ed8);
         }
     </style>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'montserrat': ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="h-screen overflow-hidden">
-    <!-- Carousel Background -->
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none">
+        @if(session('success'))
+        <div class="toast-message bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-lg shadow-xl border-2 border-green-400 transform transition-all duration-300 opacity-0 translate-x-10 pointer-events-auto" data-duration="5000">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-3 text-lg"></i>
+                <span class="font-bold text-sm">{{ session('success') }}</span>
+            </div>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="toast-message bg-gradient-to-r from-red-500 to-rose-600 text-white p-4 rounded-lg shadow-xl border-2 border-red-400 transform transition-all duration-300 opacity-0 translate-x-10 pointer-events-auto" data-duration="8000">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-3 text-lg"></i>
+                <span class="font-bold text-sm">{{ session('error') }}</span>
+            </div>
+        </div>
+        @endif
+    </div>
+
     <div class="carousel-container">
         <div class="carousel-image" style="background-image: url('/Img/Carousel1.png');" data-image="1"></div>
         <div class="carousel-image" style="background-image: url('/Img/Carousel2.png');" data-image="2"></div>
@@ -115,7 +131,6 @@
         <div class="carousel-image" style="background-image: url('/Img/Carousel5.png');" data-image="5"></div>
     </div>
 
-    <!-- Top Navigation Bar -->
     <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-2 flex justify-between items-center shadow-xl border-b-2 border-red-900">
         <div class="flex items-center space-x-3">
             <img src="/Img/Icon.png" alt="BFP Icon" class="h-8 w-8 rounded-lg shadow-lg ring-2 ring-white/20">
@@ -126,7 +141,6 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl border-l border-gray-700">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-700">
@@ -152,34 +166,18 @@
         </div>
     </div>
 
-    <!-- Sidebar Overlay -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
-    <!-- Main Content -->
     <div class="flex justify-center p-2 h-[calc(100vh-40px)] overflow-hidden mb-4">
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1280px] border border-white/20 flex flex-col h-full">
-            <!-- Header Section - Sticky -->
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
                 <div class="p-1.5">
-                    @if(session('success'))
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs animate-pulse">
-                        <i class="fas fa-check-circle mr-2 text-green-600"></i>{{ session('success') }}
-                    </div>
-                    @endif
-
-                    @if(session('error'))
-                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 text-red-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs">
-                        <i class="fas fa-exclamation-circle mr-2 text-red-600"></i>{{ session('error') }}
-                    </div>
-                    @endif
-
                     <div class="flex items-center justify-between mb-1">
                         <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
                             <i class="fas fa-users mr-2 text-blue-600"></i>User Management
                         </h2>
                     </div>
 
-                    <!-- Stats Cards - Single Row -->
                     <div class="grid grid-cols-2 gap-2 mb-2">
                         <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
                             <div class="text-xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $totalItems }}</div>
@@ -197,7 +195,6 @@
                 </div>
             </div>
 
-            <!-- Users Table -->
             <div class="overflow-x-auto overflow-y-auto rounded-b-2xl flex-1 min-h-0">
                 <table class="w-full">
                     <thead class="sticky top-0 z-10">
@@ -261,7 +258,6 @@
         </div>
     </div>
 
-    <!-- Change User Email Modal -->
     <div id="userEmailModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-2 border-gray-200 transform transition-all duration-300 scale-95" id="emailModalContent">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
@@ -294,6 +290,18 @@
                         <input type="email" name="email" id="user_email" required
                             class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                     </div>
+
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center">
+                            <i class="fas fa-user-shield mr-2 text-red-600"></i>Confirm YOUR Password *
+                        </label>
+                        <input type="password" name="admin_password" required placeholder="Enter your admin password"
+                            class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200">
+                        <p class="text-xs text-gray-500 mt-1">Required to save changes.</p>
+                        @error('admin_password')
+                            <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-6">
@@ -310,7 +318,6 @@
         </div>
     </div>
 
-    <!-- Change User Password Modal -->
     <div id="userPasswordModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-2 border-gray-200 transform transition-all duration-300 scale-95" id="passwordModalContent">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
@@ -354,6 +361,18 @@
                         <input type="password" name="password_confirmation" id="user_password_confirmation" required
                             class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200">
                     </div>
+
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 flex items-center">
+                            <i class="fas fa-user-shield mr-2 text-red-600"></i>Confirm YOUR Password *
+                        </label>
+                        <input type="password" name="admin_password" required placeholder="Enter your admin password"
+                            class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200">
+                        <p class="text-xs text-gray-500 mt-1">Required to save changes.</p>
+                        @error('admin_password')
+                            <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-6">
@@ -371,6 +390,95 @@
     </div>
 
     <script>
+        // Handle the new Toast Animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast-message');
+            
+            toasts.forEach(toast => {
+                // Slide in
+                setTimeout(() => {
+                    toast.classList.remove('opacity-0', 'translate-x-10');
+                }, 100);
+
+                // Get duration from data attribute or default to 5s
+                const duration = toast.getAttribute('data-duration') || 5000;
+
+                // Slide out after duration
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-x-10');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300); // Wait for transition to finish before removing from DOM
+                }, duration);
+            });
+
+            // *** AUTO RE-OPEN MODAL IF THERE ARE ERRORS ***
+            // Since we validate on backend, if admin password fails, the page reloads with errors.
+            // We want to keep the modal open so the user sees the red error.
+            @if($errors->any())
+                // Check if it was the email form or password form based on old input presence
+                // This is a simple heuristic.
+                @if(old('email')) 
+                   // Likely email modal
+                   // We can't easily grab ID here without passing it back, 
+                   // but usually users just retry. 
+                   // Ideally, the controller should pass 'open_modal_id' in session.
+                @endif
+            @endif
+            
+            // Carousel logic
+            let currentImage = 1;
+            const totalImages = 5;
+
+            function showImage(imageNumber) {
+                document.querySelectorAll('.carousel-image').forEach(img => {
+                    img.classList.remove('active');
+                });
+                const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
+                if (currentImg) {
+                    currentImg.classList.add('active');
+                }
+            }
+
+            function nextImage() {
+                currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
+                showImage(currentImage);
+            }
+
+            showImage(1);
+            setInterval(nextImage, 5000);
+
+            // Button Event Listeners
+            document.querySelectorAll('.edit-user-email-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    openUserEmailModal(this.dataset.id, this.dataset.name, this.dataset.email);
+                });
+            });
+
+            document.querySelectorAll('.edit-user-password-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    openUserPasswordModal(this.dataset.id, this.dataset.name);
+                });
+            });
+        });
+
+        // Sidebar toggle logic
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('translate-x-full');
+            document.getElementById('sidebarOverlay').classList.remove('hidden');
+        });
+
+        document.getElementById('sidebarClose').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+
+        document.getElementById('sidebarOverlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.add('translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hidden');
+        });
+
+        // Modal Logic
         function openUserEmailModal(id, name, email) {
             document.getElementById('userEmailForm').action = '{{ route("admin.users.update.email", ":id") }}'.replace(':id', id);
             document.getElementById('userEmailUserId').value = id;
@@ -425,87 +533,14 @@
             }, 300);
         }
 
-        // Add event listeners when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle user email button clicks
-            document.querySelectorAll('.edit-user-email-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    const name = this.dataset.name;
-                    const email = this.dataset.email;
-
-                    openUserEmailModal(id, name, email);
-                });
-            });
-
-            // Handle user password button clicks
-            document.querySelectorAll('.edit-user-password-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    const name = this.dataset.name;
-
-                    openUserPasswordModal(id, name);
-                });
-            });
-        });
-
-        // Sidebar functionality
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.remove('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.remove('hidden');
-        });
-
-        document.getElementById('sidebarClose').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.add('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-
-        document.getElementById('sidebarOverlay').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.add('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-
-        // Close modals when clicking outside
+        // Close modals on outside click
         document.getElementById('userEmailModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeUserEmailModal();
-            }
+            if (e.target === this) closeUserEmailModal();
         });
 
         document.getElementById('userPasswordModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeUserPasswordModal();
-            }
-        });
-
-        // Carousel functionality
-        let currentImage = 1;
-        const totalImages = 5;
-
-        function showImage(imageNumber) {
-            // Remove active class from all images
-            document.querySelectorAll('.carousel-image').forEach(img => {
-                img.classList.remove('active');
-            });
-
-            // Add active class to current image
-            const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
-            if (currentImg) {
-                currentImg.classList.add('active');
-            }
-        }
-
-        function nextImage() {
-            currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
-            showImage(currentImage);
-        }
-
-        // Initialize carousel
-        document.addEventListener('DOMContentLoaded', function() {
-            showImage(1); // Show first image
-            setInterval(nextImage, 5000); // Change every 5 seconds
+            if (e.target === this) closeUserPasswordModal();
         });
     </script>
 </body>
-
 </html>
