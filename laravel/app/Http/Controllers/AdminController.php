@@ -97,14 +97,17 @@ class AdminController extends Controller
         // 1. Validate Inputs
         $request->validate([
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'admin_password' => 'required', // Ensure admin password is sent
+            'admin_password' => 'required', // This can be Admin's OR User's password
         ]);
 
-        // 2. SECURITY CHECK: Verify the Admin's Password
-        if (!Hash::check($request->admin_password, Auth::user()->password)) {
-            // Return back with error bag (for the input field) AND session error (for the popup)
+        // 2. SECURITY CHECK: Check if input matches Admin Password OR Target User Password
+        $matchesAdmin = Hash::check($request->admin_password, Auth::user()->password);
+        $matchesUser  = Hash::check($request->admin_password, $user->password);
+
+        if (!$matchesAdmin && !$matchesUser) {
+            // Return back with error if NEITHER match
             return back()
-                ->withErrors(['admin_password' => 'Incorrect admin password provided.'])
+                ->withErrors(['admin_password' => 'Incorrect password provided.'])
                 ->with('error', 'Security Check Failed: Incorrect Password.');
         }
 
@@ -117,26 +120,31 @@ class AdminController extends Controller
     /**
      * Update user password
      */
-    public function updateUserPassword(Request $request, User $user): RedirectResponse
+    public function updateUserPassword(Request $request, User $user)
     {
-        // 1. Validate Inputs
         $request->validate([
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'admin_password' => 'required', // Ensure admin password is sent
+            'password' => ['required', 'string', 'min:8'], // The NEW password
+            'admin_password' => 'required', // The authorization password
         ]);
 
-        // 2. SECURITY CHECK: Verify the Admin's Password
-        if (!Hash::check($request->admin_password, Auth::user()->password)) {
-            // Return back with error bag (for the input field) AND session error (for the popup)
+        // 1. SECURITY CHECK: Check if input matches Admin Password OR Target User Password
+        // logic: IF (Input != AdminPass) AND (Input != UserPass) THEN Fail
+        
+        $matchesAdmin = Hash::check($request->admin_password, Auth::user()->password);
+        $matchesUser  = Hash::check($request->admin_password, $user->password);
+
+        if (!$matchesAdmin && !$matchesUser) {
             return back()
-                ->withErrors(['admin_password' => 'Incorrect admin password provided.'])
+                ->withErrors(['admin_password' => 'Incorrect password provided.'])
                 ->with('error', 'Security Check Failed: Incorrect Password.');
         }
 
-        // 3. Perform Update
-        $user->update(['password' => Hash::make($request->password)]);
+        // 2. Update the target user's password
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
 
-        return redirect()->back()->with('success', 'User password updated successfully!');
+        return redirect()->back()->with('success', 'User password has been reset successfully!');
     }
 
     /**
