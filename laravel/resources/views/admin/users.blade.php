@@ -190,21 +190,11 @@
     <div class="flex justify-center p-2 h-[calc(100vh-40px)] overflow-hidden mb-4">
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1280px] border border-white/20 flex flex-col h-full">
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
-                <div class="p-1.5">
-                    <div class="flex items-center justify-between mb-1">
+                <div class="p-2">
+                    <div class="flex items-center justify-center mb-1">
                         <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
-                            <i class="fas fa-users mr-2 text-blue-600"></i>User Management
+                            <i class="fas fa-users mr-2 text-blue-600"></i>USER MANAGEMENT
                         </h2>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mb-2">
-                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                            <div class="text-xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $totalItems }}</div>
-                            <div class="text-sm text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-2"><i class="fas fa-box mr-1"></i>Items</div>
-                        </div>
-                        <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg p-3 border border-purple-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                            <div class="text-xl font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $totalUsers }}</div>
-                            <div class="text-sm text-purple-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-2"><i class="fas fa-users mr-1"></i>Users</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -213,9 +203,9 @@
                 <table class="w-full">
                     <thead class="sticky top-0 z-10">
                         <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 text-white shadow-lg">
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider"><i class="fas fa-user mr-1.5 text-[10px]"></i>Name</th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider"><i class="fas fa-envelope mr-1.5 text-[10px]"></i>Email</th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider"><i class="fas fa-cog mr-1.5 text-[10px]"></i>Actions</th>
+                            <th class="px-3 py-1.5 text-left text-[15px] font-bold uppercase tracking-wider"><i class="fas fa-user mr-1.5 text-[15px]"></i>Name</th>
+                            <th class="px-3 py-1.5 text-left text-[15px] font-bold uppercase tracking-wider"><i class="fas fa-envelope mr-1.5 text-[15px]"></i>Email</th>
+                            <th class="px-3 py-1.5 text-left text-[15px] font-bold uppercase tracking-wider"><i class="fas fa-cog mr-1.5 text-[15px]"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
