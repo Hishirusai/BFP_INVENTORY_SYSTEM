@@ -297,53 +297,25 @@
                                 </span>
                             </td>
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
-                                @if($item->life_span_years && $item->date_acquired)
-                                @php
-                                    $expirationDate = $item->date_acquired->copy()->addYears($item->life_span_years);
-                                    $diff = now()->diff($expirationDate);
-                                    $isExpired = now()->greaterThanOrEqualTo($expirationDate);
+    @if($item->life_span_years && $item->date_acquired)
+        @php
+            // Calculate the expiration date
+            $expirationDate = $item->date_acquired->copy()->addYears($item->life_span_years);
+            // Check if expired for styling purposes
+            $isExpired = now()->greaterThanOrEqualTo($expirationDate);
+        @endphp
 
-                                    if ($isExpired) {
-                                        $timePassed = $expirationDate->diffForHumans(null, true);
-                                        $displayText = "EXPIRED ({$timePassed} ago)";
-                                        $percentage = 100;
-                                    } else {
-                                        $remainingYears = $diff->y;
-                                        $remainingMonths = $diff->m;
-                                        if ($remainingYears > 0) {
-                                            $displayText = "{$remainingYears} YRS, {$remainingMonths} MTHS left";
-                                        } elseif ($remainingMonths > 0) {
-                                            $displayText = "{$remainingMonths} MTHS left";
-                                        } else {
-                                            $displayText = "< 1 Month left";
-                                        }
-                                        $totalDays = $item->life_span_years * 365.25;
-                                        $daysPassed = $item->date_acquired->diffInDays(now());
-                                        $percentage = min(100, ($daysPassed / $totalDays) * 100);
-                                    }
-    
-                                    $barColorClass = 'bg-gradient-to-r from-green-500 to-emerald-600';
-                                    if ($isExpired) {
-                                        $barColorClass = 'bg-gradient-to-r from-red-500 to-rose-600';
-                                    } elseif ($percentage > 75) {
-                                        $barColorClass = 'bg-gradient-to-r from-yellow-500 to-orange-500';
-                                    }
-                                @endphp
-
-                                <div class="flex flex-col justify-center">
-                                    <div class="text-[9px] text-gray-600 mb-1 font-semibold">
-                                        <span class="{{ $isExpired ? 'text-red-600' : 'text-gray-500' }} font-bold text-[8px]">
-                                            {{ $displayText }}
-                                        </span>
-                                    </div>
-                                    <div class="w-24 bg-gray-200 rounded-full h-1.5 border border-gray-100" title="Life span progress: {{ number_format($percentage, 2) }}%">
-                                        <div class="h-1.5 rounded-full transition-all duration-300 {{ $barColorClass }}" style="width: {{ $percentage }}%"></div>
-                                    </div>
-                                </div>
-                                @else
-                                <span class="text-gray-400 text-[9px]">N/A</span>
-                                @endif
-                            </td>
+        <div class="flex items-center">
+            {{-- Display the actual Expiration Date --}}
+            <span class="font-bold {{ $isExpired ? 'text-red-600' : 'text-gray-700' }}">
+                <i class="fas fa-hourglass-end mr-1.5 text-[9px] {{ $isExpired ? 'text-red-500' : 'text-gray-400' }}"></i>
+                {{ $expirationDate->format('M d, Y') }}
+            </span>
+        </div>
+    @else
+        <span class="text-gray-400 text-[9px]">N/A</span>
+    @endif
+</td>
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 <div class="flex space-x-1.5">
                                     <a href="{{ route('items.edit', ['item' => $item->id, 'redirect_to' => route('stations.show', $station->id)]) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
