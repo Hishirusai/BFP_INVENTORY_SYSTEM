@@ -38,10 +38,47 @@
             background-color: rgba(153, 0, 0, 0.45);
             z-index: -1;
         }
+
+        /* Carousel Styles */
+        .carousel-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .carousel-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .carousel-image.active {
+            opacity: 0.45;
+        }
     </style>
 </head>
 
 <body class="min-h-screen">
+
+    <div class="carousel-container">
+        <div class="carousel-image" style="background-image: url('/Img/Carousel1.png');" data-image="1"></div>
+        <div class="carousel-image" style="background-image: url('/Img/Carousel2.png');" data-image="2"></div>
+        <div class="carousel-image" style="background-image: url('/Img/Carousel3.png');" data-image="3"></div>
+        <div class="carousel-image" style="background-image: url('/Img/Carousel4.png');" data-image="4"></div>
+        <div class="carousel-image" style="background-image: url('/Img/Carousel5.png');" data-image="5"></div>
+    </div>
+
     <!-- Top Navigation Bar -->
     <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-2 flex justify-between items-center shadow-xl border-b-2 border-red-900">
         <div class="flex items-center space-x-3">
@@ -175,6 +212,30 @@
         </div>
 
         <script>
+                    // Carousel functionality
+        let currentImage = 1;
+        const totalImages = 5;
+
+        function showImage(imageNumber) {
+            document.querySelectorAll('.carousel-image').forEach(img => {
+                img.classList.remove('active');
+            });
+            const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
+            if (currentImg) {
+                currentImg.classList.add('active');
+            }
+        }
+
+        function nextImage() {
+            currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
+            showImage(currentImage);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showImage(1);
+            setInterval(nextImage, 5000);
+        });
+        
             // Sidebar functionality
             document.getElementById('sidebarToggle').addEventListener('click', function() {
                 document.getElementById('sidebar').classList.remove('translate-x-full');
