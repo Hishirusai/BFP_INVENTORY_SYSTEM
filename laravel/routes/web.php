@@ -57,6 +57,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/reports', [ReportsController::class, 'store'])->name('reports.store');
     Route::get('/reports/{report}', [ReportsController::class, 'show'])->name('reports.show');
     Route::delete('/reports/{report}', [ReportsController::class, 'destroy'])->name('reports.destroy');
+
+    // For Edit Modal
+    Route::get('/items/{item}/edit-form', [ItemController::class, 'editForm'])->name('items.edit-form');
 });
 
 

@@ -25,9 +25,9 @@ class ItemController extends Controller
         }
 
         $items = $query->latest()->get();
-        $suppliers = Supplier::all();
-
-        return view('items.index', compact('items', 'suppliers'));
+        $stations = \App\Models\Station::where('is_active', true)->get();
+    $units = Item::select('unit')->distinct()->pluck('unit');
+    return view('items.edit-form', compact('item', 'suppliers', 'stations', 'units'));
     }
 
     /**
@@ -176,4 +176,16 @@ class ItemController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+   /**
+ * Show the form for editing the specified resource as a partial for modal.
+ */
+public function editForm(Item $item)
+{
+    $suppliers = Supplier::all();
+    $stations = \App\Models\Station::where('is_active', true)->get();
+    $units = Item::select('unit')->distinct()->pluck('unit');
+    return view('items.edit-form', compact('item', 'suppliers', 'stations', 'units'));
+}
+
 }

@@ -139,6 +139,9 @@
                 <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
                     <i class="fas fa-home mr-3"></i>Dashboard
                 </a>
+                <a href="{{ route('stations.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-building mr-3"></i>Stations
+                </a>
                 <a href="{{ route('reports.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
                     <i class="fas fa-chart-bar mr-3"></i>Full Reports
                 </a>
@@ -179,17 +182,17 @@
 
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 border border-blue-400 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
+                        <!-- <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 border border-blue-400 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
                             <div>
                                 <div class="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">{{ $totalItems }}</div>
-                                <div class="text-sm text-blue-100 font-semibold uppercase tracking-wide flex items-center">
+                                 <div class="text-sm text-blue-100 font-semibold uppercase tracking-wide flex items-center">
                                     <i class="fas fa-box mr-2"></i>Total Items
-                                </div>
+                                </div> 
                             </div>
                             <div class="p-4 bg-white/20 rounded-full">
                                 <i class="fas fa-box text-blue-100 text-2xl"></i>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl p-6 border border-purple-400 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-between group">
                             <div>
