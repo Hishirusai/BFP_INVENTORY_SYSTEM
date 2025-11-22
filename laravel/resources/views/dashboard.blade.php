@@ -316,19 +316,14 @@
                     </div>
 
                     <div class="space-y-3">
-                        <div class="grid grid-cols-4 gap-1">
+                        <div class="grid grid-cols-3 gap-2">
                             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-1 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
                                 <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
                                 <div class="text-[15px] text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-box mr-1"></i>Items
                                 </div>
                             </div>
-                            <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-1 border border-yellow-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $lowStockItems }}</div>
-                                <div class="text-[15px] text-yellow-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock
-                                </div>
-                            </div>
+
                             <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg p-1 border border-purple-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
                                 <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-330 truncate">₱{{ number_format($totalInventoryValue, 0) }}</div>
                                 <div class="text-[15px] text-purple-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
@@ -397,9 +392,7 @@
         <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
             <i class="fas fa-money-bill-wave mr-1.5"></i>Total Cost
         </th>
-        <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
-            <i class="fas fa-info-circle mr-1.5"></i>Item Status
-        </th>
+
         <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
             <i class="fas fa-check-circle mr-1.5"></i>Condition
         </th>
@@ -434,15 +427,7 @@
                                 <i class="fas fa-money-bill mr-1 text-[9px]"></i>₱{{ number_format($item->total_cost, 2) }}
                             </td>
                             
-                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
-                                <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
-                                    @if($item->status == 'active') bg-gradient-to-r from-green-400 to-emerald-500 text-white
-                                    @elseif($item->status == 'low_stock') bg-gradient-to-r from-yellow-400 to-orange-500 text-white
-                                    @else bg-gradient-to-r from-red-400 to-rose-500 text-white
-                                    @endif">
-                                    <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->status) }}
-                                </span>
-                            </td>
+
                             
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 @php
@@ -466,53 +451,25 @@
                             </td>
                             
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
-                                @if($item->life_span_years && $item->date_acquired)
-                                @php
-                                    $expirationDate = $item->date_acquired->copy()->addYears($item->life_span_years);
-                                    $diff = now()->diff($expirationDate);
-                                    $isExpired = now()->greaterThanOrEqualTo($expirationDate);
+    @if($item->life_span_years && $item->date_acquired)
+        @php
+            // Calculate the expiration date
+            $expirationDate = $item->date_acquired->copy()->addYears($item->life_span_years);
+            // Check if expired for styling purposes
+            $isExpired = now()->greaterThanOrEqualTo($expirationDate);
+        @endphp
 
-                                    if ($isExpired) {
-                                        $timePassed = $expirationDate->diffForHumans(null, true);
-                                        $displayText = "EXPIRED ({$timePassed} ago)";
-                                        $percentage = 100;
-                                    } else {
-                                        $remainingYears = $diff->y;
-                                        $remainingMonths = $diff->m;
-                                        if ($remainingYears > 0) {
-                                            $displayText = "{$remainingYears} YRS, {$remainingMonths} MTHS left";
-                                        } elseif ($remainingMonths > 0) {
-                                            $displayText = "{$remainingMonths} MTHS left";
-                                        } else {
-                                            $displayText = "< 1 Month left";
-                                        }
-                                        $totalDays = $item->life_span_years * 365.25;
-                                        $daysPassed = $item->date_acquired->diffInDays(now());
-                                        $percentage = min(100, ($daysPassed / $totalDays) * 100);
-                                    }
-    
-                                    $barColorClass = 'bg-gradient-to-r from-green-500 to-emerald-600';
-                                    if ($isExpired) {
-                                        $barColorClass = 'bg-gradient-to-r from-red-500 to-rose-600';
-                                    } elseif ($percentage > 75) {
-                                        $barColorClass = 'bg-gradient-to-r from-yellow-500 to-orange-500';
-                                    }
-                                @endphp
-
-                                <div class="flex flex-col justify-center">
-                                    <div class="text-[9px] text-gray-600 mb-1 font-semibold">
-                                        <span class="{{ $isExpired ? 'text-red-600' : 'text-gray-500' }} font-bold text-[8px]">
-                                            {{ $displayText }}
-                                        </span>
-                                    </div>
-                                    <div class="w-24 bg-gray-200 rounded-full h-1.5 border border-gray-100" title="Life span progress: {{ number_format($percentage, 2) }}%">
-                                        <div class="h-1.5 rounded-full transition-all duration-300 {{ $barColorClass }}" style="width: {{ $percentage }}%"></div>
-                                    </div>
-                                </div>
-                                @else
-                                <span class="text-gray-400 text-[9px]">N/A</span>
-                                @endif
-                            </td>
+        <div class="flex items-center">
+            {{-- Display the actual Expiration Date --}}
+            <span class="font-bold {{ $isExpired ? 'text-red-600' : 'text-gray-700' }}">
+                <i class="fas fa-hourglass-end mr-1.5 text-[9px] {{ $isExpired ? 'text-red-500' : 'text-gray-400' }}"></i>
+                {{ $expirationDate->format('M d, Y') }}
+            </span>
+        </div>
+    @else
+        <span class="text-gray-400 text-[9px]">N/A</span>
+    @endif
+</td>
                             
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 <div class="flex space-x-1.5">

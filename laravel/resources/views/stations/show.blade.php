@@ -181,18 +181,11 @@
                     </div>
 
                     <div class="space-y-3">
-                        <div class="grid grid-cols-4 gap-1">
+                        <div class="grid grid-cols-3 gap-1">
                             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-1 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
                                 <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
                                 <div class="text-[15px] text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-box mr-1"></i>Items
-                                </div>
-                            </div>
-
-                            <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg p-1 border border-yellow-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $lowStockItems }}</div>
-                                <div class="text-[15px] text-yellow-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock
                                 </div>
                             </div>
 
@@ -260,9 +253,6 @@
                     <i class="fas fa-money-bill-wave mr-1.5"></i>Total Cost
                 </th>
                 <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
-                    <i class="fas fa-info-circle mr-1.5"></i>Item Status
-                </th>
-                <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                     <i class="fas fa-check-circle mr-1.5"></i>Condition
                 </th>
                 <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
@@ -291,15 +281,7 @@
                             <td class="px-3 py-2 text-[10px] text-gray-900 font-bold text-purple-700 whitespace-nowrap">
                                 <i class="fas fa-money-bill mr-1 text-[9px]"></i>₱{{ number_format($item->total_cost, 2) }}
                             </td>
-                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
-                                <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
-                                    @if($item->status == 'active') bg-gradient-to-r from-green-400 to-emerald-500 text-white
-                                    @elseif($item->status == 'low_stock') bg-gradient-to-r from-yellow-400 to-orange-500 text-white
-                                    @else bg-gradient-to-r from-red-400 to-rose-500 text-white
-                                    @endif">
-                                    <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->status) }}
-                                </span>
-                            </td>
+
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 @php
                                 $isUnserviceable = ($item->condition == 'unserviceable') || ($item->isUnserviceableByLifespan());
