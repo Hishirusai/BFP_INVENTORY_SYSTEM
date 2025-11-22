@@ -235,7 +235,7 @@
             showImage(1);
             setInterval(nextImage, 5000);
         });
-        
+
             // Sidebar functionality
             document.getElementById('sidebarToggle').addEventListener('click', function() {
                 document.getElementById('sidebar').classList.remove('translate-x-full');

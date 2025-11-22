@@ -476,13 +476,10 @@
                                     <a href="{{ route('items.edit', $item) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
                                         <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
                                     </a>
-                                    <form action="{{ route('items.destroy', $item) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this item?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
-                                            <i class="fas fa-trash mr-1 text-[8px]"></i>Delete
-                                        </button>
-                                    </form>
+                                    <button type="button" onclick="openDeleteModal('{{ route('items.destroy', $item) }}')" 
+        class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
+    <i class="fas fa-trash mr-1 text-[8px]"></i>Delete
+</button>
                                 </div>
                             </td>
 
@@ -555,41 +552,75 @@
         </div>
     </div>
 
-    <script>
-
-    // --- Pop Notification Functionality For Aesthetics HAAHHAAHHA---
-    document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.toast-message').forEach(toast => {
-        const duration = parseInt(toast.getAttribute('data-duration')) || 5000;
-        setTimeout(() => {
-            toast.classList.remove('opacity-0', 'translate-x-10');
-            toast.classList.add('opacity-100', 'translate-x-0');
-        }, 50); 
-
-        setTimeout(() => {
-            toast.classList.remove('opacity-100', 'translate-x-0');
-            toast.classList.add('opacity-0', 'translate-x-10');
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 border-2 border-red-100 transform transition-all duration-300 scale-95" id="deleteModalContent">
             
-        setTimeout(() => {
-            toast.remove();
-                }, 300);
-            }, duration); 
-            });
-        });
+            <div class="text-center mb-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Delete Item?</h3>
+                <p class="text-sm text-gray-500 mt-2">Are you sure you want to delete this item? This action cannot be undone.</p>
+            </div>
+    
+            <div class="flex justify-center space-x-3">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 font-semibold text-sm">
+                    Cancel
+                </button>
+                
+                <form id="deleteForm" method="POST" action="">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-sm">
+                        <i class="fas fa-trash-alt mr-1.5"></i>Yes, Delete It
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        // 1. GLOBAL FUNCTIONS (Define these first so buttons can find them)
 
-        // Add event listeners to item details links
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.item-details-link').forEach(link => {
-                link.addEventListener('click', function() {
-                    const itemId = this.dataset.itemId;
-                    showItemDetails(itemId);
-                });
-            });
-        });
+        // --- Delete Modal Functions ---
+        function openDeleteModal(actionUrl) {
+            const deleteModal = document.getElementById('deleteModal');
+            const deleteModalContent = document.getElementById('deleteModalContent');
+            const deleteForm = document.getElementById('deleteForm');
 
+            if(deleteForm) deleteForm.action = actionUrl;
+
+            if(deleteModal) {
+                deleteModal.classList.remove('hidden');
+                deleteModal.classList.add('flex');
+                setTimeout(() => {
+                    if(deleteModalContent) {
+                        deleteModalContent.classList.remove('scale-95');
+                        deleteModalContent.classList.add('scale-100');
+                    }
+                }, 10);
+            }
+        }
+
+        function closeDeleteModal() {
+            const deleteModal = document.getElementById('deleteModal');
+            const deleteModalContent = document.getElementById('deleteModalContent');
+
+            if(deleteModalContent) {
+                deleteModalContent.classList.remove('scale-100');
+                deleteModalContent.classList.add('scale-95');
+            }
+            
+            setTimeout(() => {
+                if(deleteModal) {
+                    deleteModal.classList.add('hidden');
+                    deleteModal.classList.remove('flex');
+                }
+            }, 300);
+        }
+
+        // --- Item Details Modal Functions ---
         function showItemDetails(itemId) {
-            // Fetch the item details via AJAX
             fetch(`/items/${itemId}/json`)
                 .then(response => response.json())
                 .then(item => {
@@ -659,57 +690,104 @@
         function closeItemDetailsModal() {
             const modal = document.getElementById('itemDetailsModal');
             const modalContent = document.getElementById('modalContent');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
+            if(modalContent) {
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+            }
             setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                if(modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
             }, 300);
         }
 
-        // Close modal when clicking outside
-        document.getElementById('itemDetailsModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeItemDetailsModal();
-            }
-        });
-
-        // Sidebar functionality
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.remove('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.remove('hidden');
-        });
-
-        document.getElementById('sidebarClose').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.add('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-
-        document.getElementById('sidebarOverlay').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.add('translate-x-full');
-            document.getElementById('sidebarOverlay').classList.add('hidden');
-        });
-
-        // Carousel functionality
-        let currentImage = 1;
-        const totalImages = 5;
-
-        function showImage(imageNumber) {
-            document.querySelectorAll('.carousel-image').forEach(img => {
-                img.classList.remove('active');
-            });
-            const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
-            if (currentImg) {
-                currentImg.classList.add('active');
-            }
-        }
-
-        function nextImage() {
-            currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
-            showImage(currentImage);
-        }
-
+        // 2. EVENT LISTENERS (Run after HTML is loaded)
         document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Close Modals on Outside Click ---
+            const deleteModal = document.getElementById('deleteModal');
+            if(deleteModal) {
+                deleteModal.addEventListener('click', function(e) {
+                    if (e.target === this) closeDeleteModal();
+                });
+            }
+
+            const itemDetailsModal = document.getElementById('itemDetailsModal');
+            if(itemDetailsModal) {
+                itemDetailsModal.addEventListener('click', function(e) {
+                    if (e.target === this) closeItemDetailsModal();
+                });
+            }
+
+            // --- Toast Notifications ---
+            document.querySelectorAll('.toast-message').forEach(toast => {
+                const duration = parseInt(toast.getAttribute('data-duration')) || 5000;
+                setTimeout(() => {
+                    toast.classList.remove('opacity-0', 'translate-x-10');
+                    toast.classList.add('opacity-100', 'translate-x-0');
+                }, 50);
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-x-0');
+                    toast.classList.add('opacity-0', 'translate-x-10');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            });
+
+            // --- Item Details Links ---
+            document.querySelectorAll('.item-details-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    const itemId = this.dataset.itemId;
+                    showItemDetails(itemId);
+                });
+            });
+
+            // --- Sidebar ---
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarClose = document.getElementById('sidebarClose');
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.remove('translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                });
+            }
+
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', () => {
+                    sidebar.classList.add('translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.add('translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                });
+            }
+
+            // --- Carousel ---
+            let currentImage = 1;
+            const totalImages = 5;
+
+            function showImage(imageNumber) {
+                document.querySelectorAll('.carousel-image').forEach(img => {
+                    img.classList.remove('active');
+                });
+                const currentImg = document.querySelector(`[data-image="${imageNumber}"]`);
+                if (currentImg) {
+                    currentImg.classList.add('active');
+                }
+            }
+
+            function nextImage() {
+                currentImage = currentImage >= totalImages ? 1 : currentImage + 1;
+                showImage(currentImage);
+            }
+
             showImage(1);
             setInterval(nextImage, 5000);
         });
