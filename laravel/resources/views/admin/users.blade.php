@@ -157,15 +157,6 @@
             <h1 class="text-base font-bold tracking-wide">BFP INVENTORY SYSTEM</h1>
         </div>
         <div class="flex items-center space-x-3">
-            <div class="hidden md:flex items-center bg-red-900/50 px-3 py-1 rounded-full border border-red-500/30">
-                @if(Auth::user()->email == 'bfpadminaccount@gmail.com')
-                    <i class="fas fa-crown text-yellow-400 mr-2 text-sm"></i>
-                    <span class="text-xs font-semibold text-yellow-100">Super Admin</span>
-                @else
-                    <i class="fas fa-user-shield text-blue-300 mr-2 text-sm"></i>
-                    <span class="text-xs font-semibold text-blue-100">{{ Auth::user()->name }}</span>
-                @endif
-            </div>
             <i id="sidebarToggle" class="fas fa-bars text-white text-lg cursor-pointer hover:text-blue-200 hover:scale-110 transition-transform duration-200 p-1.5 rounded-lg hover:bg-white/10"></i>
         </div>
     </div>
