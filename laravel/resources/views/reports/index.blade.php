@@ -238,7 +238,7 @@
                                 <i class="fas fa-history mr-1 text-[10px]"></i>Prev
                             </th>
 
-                            <th class="px-1 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider w-16">
+                            <th class="px-1 py-2.5 text-center text-[10px] font-bold uppercase tracking-wider w-26">
                                 <i class="fas fa-sort-numeric-up mr-1 text-[10px]"></i>Qty Chg
                             </th>
 
