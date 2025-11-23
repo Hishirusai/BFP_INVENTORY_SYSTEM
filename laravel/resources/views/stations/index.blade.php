@@ -130,18 +130,23 @@
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1280px] border border-white/20 flex flex-col h-full">
             <!-- Header Section - Sticky -->
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
-                <div class="p-1.5">
-                    <div class="flex items-center justify-between mb-1">
-                        <div>
-                            <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
-                                <i class="fas fa-building mr-2 text-blue-600"></i>STATIONS
-                            </h2>
-                            <p class="text-[10px] text-gray-600">Click on a station to view its inventory</p>
-                        </div>
-                        <a href="{{ route('stations.create') }}"
-                            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-[11px]">
-                            <i class="fas fa-plus mr-1.5"></i>Add Station
-                        </a>
+    <div class="p-1.5">
+        <div class="flex items-center justify-between mb-1">
+            <div>
+                <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
+                    <i class="fas fa-building mr-2 text-blue-600"></i>STATIONS
+                </h2>
+                <p class="text-[10px] text-gray-600">Click on a station to view its inventory</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="{{ route('stations.create') }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-[11px]">
+                    <i class="fas fa-plus mr-1.5"></i>Add Station
+                </a>
+                
+                <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-[11px]">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
                     </div>
                     @if(session('success'))
                     <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-3 py-1 rounded-lg mb-1 shadow-md flex items-center text-xs animate-pulse">
