@@ -28,7 +28,7 @@ class Item extends Model
     protected $casts = [
         'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
-        'date_acquired' => 'date',
+        'date_acquired' => 'datetime',
         'is_active' => 'boolean',
     ];
 
