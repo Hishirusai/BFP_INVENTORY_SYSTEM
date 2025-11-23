@@ -339,12 +339,12 @@
                         </div>
 
                         <div class="flex flex-wrap items-center gap-1">
-                            <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
-                                <i class="fas fa-plus mr-1.5"></i>Add Item
-                            </a>
-                            <a href="{{ route('items.transfer.create') }}" class="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-2 py-1.5 rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
-                                <i class="fas fa-exchange-alt mr-1.5"></i>Transfer Item
-                            </a>
+                            <button id="openAddItemModal" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1.5 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
+    <i class="fas fa-plus mr-1.5"></i>Add Item
+</button>
+                            <button id="openTransferModal" class="bg-gradient-to-r from-orange-500 to-amber-600 text-white px-2 py-1.5 rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
+    <i class="fas fa-exchange-alt mr-1.5"></i>Transfer Item
+</button>
                             <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-1 flex-1 min-w-[200px]">
                                 <input type="text" name="search" placeholder="Search..."
                                     value="{{ request('search') }}"
@@ -473,9 +473,10 @@
                             
                             <td class="px-3 py-2 text-[10px] whitespace-nowrap">
                                 <div class="flex space-x-1.5">
-                                    <a href="{{ route('items.edit', $item) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
-                                        <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
-                                    </a>
+                                    <button class="edit-item-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold" 
+        data-item-id="{{ $item->id }}">
+    <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
+</button>
                                     <button type="button" onclick="openDeleteModal('{{ route('items.destroy', $item) }}')" 
         class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
     <i class="fas fa-trash mr-1 text-[8px]"></i>Delete
@@ -792,5 +793,934 @@
             setInterval(nextImage, 5000);
         });
     </script>
+
+     <!-- Add Item Modal -->
+<div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[900px] max-h-[90vh] overflow-y-auto border-2 border-gray-200 transform transition-all duration-300 scale-95" id="addItemModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-start p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center">
+                <i class="fas fa-plus-circle mr-2 text-blue-600"></i>ADD NEW ITEM
+            </h2>
+            <button id="closeAddItemModal" class="text-gray-500 hover:text-red-500 transition-colors text-xl p-2 rounded-lg hover:bg-red-50">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body (Form) -->
+        <div class="p-6">
+            <form action="{{ route('items.store') }}" method="POST" class="space-y-6">
+                @csrf
+
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+                        <input type="text" name="name" id="name" required
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            value="{{ old('name') }}">
+                        @error('name')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="sku" class="block text-sm font-medium text-gray-700 mb-2">SKU *</label>
+                        <input type="text" name="sku" id="sku" required
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            value="{{ old('sku') }}">
+                        @error('sku')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea name="description" id="description" rows="3"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">{{ old('description') }}</textarea>
+                    @error('description')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Station -->
+                <div>
+                    <label for="station_id" class="block text-sm font-medium text-gray-700 mb-2">Station</label>
+                    <select name="station_id" id="station_id"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                        <option value="">Main Central Station</option>
+                        @foreach($stations as $station)
+                        <option value="{{ $station->id }}" {{ old('station_id', $selectedStationId ?? null) == $station->id ? 'selected' : '' }}>{{ $station->name }} ({{ $station->code }})</option>
+                        @endforeach
+                    </select>
+                    @error('station_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Unit -->
+                <div>
+                    <label for="unit" class="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
+                    <select name="unit" id="unit" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                        <option value="">Select unit</option>
+                        @foreach($units as $unit)
+                        <option value="{{ $unit }}" {{ old('unit') == $unit ? 'selected' : '' }}>{{ ucfirst($unit) }}</option>
+                        @endforeach
+                        @unless($units->contains('box'))
+                        <option value="box" {{ old('unit') == 'box' ? 'selected' : '' }}>Box</option>
+                        @endunless
+                    </select>
+                    @error('unit')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Pricing -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="unit_cost" class="block text-sm font-medium text-gray-700 mb-2">Unit Cost</label>
+                        <input type="number" name="unit_cost" id="unit_cost" step="0.01" min="0"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            value="{{ old('unit_cost') }}" oninput="calculateTotalCost()">
+                        @error('unit_cost')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="total_cost" class="block text-sm font-medium text-gray-700 mb-2">Total Cost (Auto-calculated)</label>
+                        <input type="number" name="total_cost" id="total_cost" step="0.01" min="0" readonly
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                            value="{{ old('total_cost') }}">
+                        @error('total_cost')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Inventory -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="quantity_on_hand" class="block text-sm font-medium text-gray-700 mb-2">Quantity on Hand *</label>
+                        <input type="number" name="quantity_on_hand" id="quantity_on_hand" required min="0"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            value="{{ old('quantity_on_hand') }}" oninput="calculateTotalCost()">
+                        @error('quantity_on_hand')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="reorder_level" class="block text-sm font-medium text-gray-700 mb-2">Reorder Level *</label>
+                        <input type="number" name="reorder_level" id="reorder_level" required min="0"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            value="{{ old('reorder_level') }}">
+                        @error('reorder_level')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="date_acquired" class="block text-sm font-medium text-gray-700 mb-2">Date Acquired</label>
+                        <input type="date" name="date_acquired" id="date_acquired"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            value="{{ old('date_acquired') }}">
+                        @error('date_acquired')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Condition and Date Expiry -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+                        <select name="condition" id="condition"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                            <option value="serviceable" {{ old('condition', 'serviceable') == 'serviceable' ? 'selected' : '' }}>Serviceable</option>
+                            <option value="unserviceable" {{ old('condition') == 'unserviceable' ? 'selected' : '' }}>Unserviceable</option>
+                        </select>
+                        @error('condition')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="date_expiry" class="block text-sm font-medium text-gray-700 mb-2">Date Expiry (dd/mm/yyyy)</label>
+                                <input type="date" id="date_expiry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value="{{ old('date_expiry', '') }}">
+                                <input type="hidden" name="life_span_years" id="life_span_years_hidden" value="{{ old('life_span_years') }}">
+                                <p class="text-xs text-gray-500 mt-1">Life span (years) will be computed automatically.</p>
+                        @error('life_span_years')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancelAddItemModal"
+                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 font-semibold">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold">
+                        <i class="fas fa-save mr-2"></i>Add Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END OF Add Item Modal -->
+
+    <!-- Transfer Item Modal -->
+<div id="transferModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[900px] max-h-[90vh] overflow-y-auto border-2 border-gray-200 transform transition-all duration-300 scale-95" id="transferModalContent">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-start p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent flex items-center">
+                <i class="fas fa-exchange-alt mr-2 text-orange-600"></i>TRANSFER ITEM
+            </h2>
+            <button id="closeTransferModal" class="text-gray-500 hover:text-red-500 transition-colors text-xl p-2 rounded-lg hover:bg-red-50">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Form Section -->
+        <div class="p-6">
+            @if(session('error'))
+            <div class="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 mb-4 rounded">
+                <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+            </div>
+            @endif
+
+            <form action="{{ route('items.transfer.store') }}" method="POST" class="space-y-6">
+                @csrf
+
+                <div>
+                    <label for="from_station_id" class="block text-sm font-medium text-gray-700 mb-2">From Station (Filter)</label>
+                    <select id="from_station_id" onchange="filterItemsByStation()"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                        <option value="">All Stations</option>
+                        <option value="main" {{ ($fromStationId ?? '') === 'main' ? 'selected' : '' }}>Main Central Station</option>
+                        @foreach($stations as $station)
+                        <option value="{{ $station->id }}" {{ ($fromStationId ?? '') == $station->id ? 'selected' : '' }}>
+                            {{ $station->name }} ({{ $station->code }})
+                        </option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">Select the source station to filter items</p>
+                </div>
+
+                <div>
+    <label for="item_id" class="block text-sm font-medium text-gray-700 mb-2">Select Item *</label>
+    <div class="relative">
+        <input type="text" id="item_search" placeholder="Search items..." 
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            onkeyup="filterItemOptions()" onfocus="showSuggestions()" onblur="hideSuggestions()">
+        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+        
+        <!-- Search Suggestions Dropdown -->
+        <div id="searchSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto hidden z-[100] transform transition-all duration-200">
+            <!-- Suggestions will appear here dynamically -->
+        </div>
+    </div>
+    
+    <select name="item_id" id="item_id" required onchange="updateCurrentStation()" size="8"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 mt-2 hidden">
+        <option value="">Select an item</option>
+        @foreach($allItemsForTransfer as $item)
+        <option value="{{ $item->id }}" 
+            data-station-id="{{ $item->station_id }}"
+            data-station-name="{{ $item->station ? $item->station->name : 'Main Central Station' }}"
+            data-quantity="{{ $item->quantity_on_hand }}"
+            data-item-text="{{ strtolower($item->name . ' ' . $item->sku . ' ' . ($item->description ?? '')) }}"
+            {{ ($selectedItemId ?? '') == $item->id ? 'selected' : '' }}>
+            {{ $item->name }} ({{ $item->quantity_on_hand }} {{ $item->unit }})
+            @if($item->station)
+                - Current: {{ $item->station->name }}
+            @else
+                - Current: Main Central Station
+            @endif
+        </option>
+        @endforeach
+    </select>
+    
+    <div id="item_display" class="mt-2 border border-gray-300 rounded-lg max-h-64 overflow-y-auto hidden">
+        <!-- Items will be displayed here -->
+    </div>
+    
+    <div id="currentStationInfo" class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg hidden">
+        <p class="text-sm text-blue-800">
+            <i class="fas fa-info-circle mr-2"></i>
+            <strong>Current Station:</strong> <span id="currentStationName">-</span>
+        </p>
+    </div>
+    @error('item_id')
+    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+    </div>
+
+                <div>
+                    <label for="to_station_id" class="block text-sm font-medium text-gray-700 mb-2">Transfer To Station *</label>
+                    <select name="to_station_id" id="to_station_id" required onchange="validateTransfer()"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                        <option value="">Select destination station</option>
+                        <option value="main">Main Central Station</option>
+                        @foreach($stations as $station)
+                        <option value="{{ $station->id }}">{{ $station->name }} ({{ $station->code }})</option>
+                        @endforeach
+                    </select>
+                    <div id="transferWarning" class="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg hidden">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <span id="warningMessage">Cannot transfer to the same station.</span>
+                        </p>
+                    </div>
+                    @error('to_station_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+                    <input type="number" name="quantity" id="quantity" required min="1" oninput="validateQuantity()"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        value="{{ old('quantity') }}">
+                    <p class="text-xs text-gray-500 mt-1">
+                        <span id="availableQuantity">Available: -</span>
+                    </p>
+                    <div id="quantityError" class="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg hidden">
+                        <p class="text-sm text-red-800">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <span id="quantityErrorMessage">Insufficient quantity available.</span>
+                        </p>
+                    </div>
+                    @error('quantity')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Reason (Optional)</label>
+                    <textarea name="reason" id="reason" rows="3"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">{{ old('reason') }}</textarea>
+                    @error('reason')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                 <!-- Form Actions -->
+                <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button type="button" id="cancelTransferModal"
+                        class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 font-semibold">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-lg hover:from-orange-600 hover:to-amber-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold">
+                        <i class="fas fa-exchange-alt mr-2"></i>Transfer Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END OF Transfer Item Modal -->
+
+<!-- Edit Item Modal -->
+<div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[900px] max-h-[90vh] overflow-y-auto border-2 border-gray-200 transform transition-all duration-300 scale-95" id="editItemModalContent">
+        
+        <!-- Modal Header -->
+        <div class="flex justify-between items-start p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center">
+                <i class="fas fa-edit mr-2 text-blue-600"></i>EDIT ITEM
+            </h2>
+            <button id="closeEditModal" class="text-gray-500 hover:text-red-500 transition-colors text-xl p-2 rounded-lg hover:bg-red-50">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Form Display Area -->
+        <div class="p-6">
+            <div id="editFormDisplay">
+                <!-- Edit form will be loaded here via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END OF Edit Item Modal -->
+
+    <script>
+   // Updated Modal Script with animations
+const openModalBtn = document.getElementById('openAddItemModal');
+const modal = document.getElementById('addItemModal');
+const modalContent = document.getElementById('addItemModalContent');
+const closeModalBtn = document.getElementById('closeAddItemModal');
+const cancelBtn = document.getElementById('cancelAddItemModal');
+
+openModalBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+    }, 10);
+});
+
+function closeAddItemModal() {
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+closeModalBtn.addEventListener('click', closeAddItemModal);
+cancelBtn.addEventListener('click', closeAddItemModal);
+
+// Close modal on clicking outside
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        closeAddItemModal();
+    }
+});
+
+// Transfer Modal Script
+const openTransferModalBtn = document.getElementById('openTransferModal');
+const transferModal = document.getElementById('transferModal');
+const transferModalContent = document.getElementById('transferModalContent');
+const closeTransferModalBtn = document.getElementById('closeTransferModal');
+const cancelTransferModalBtn = document.getElementById('cancelTransferModal');
+
+openTransferModalBtn.addEventListener('click', () => {
+    transferModal.classList.remove('hidden');
+    setTimeout(() => {
+        transferModalContent.classList.remove('scale-95');
+        transferModalContent.classList.add('scale-100');
+    }, 10);
+});
+
+function closeTransferModal() {
+    transferModalContent.classList.remove('scale-100');
+    transferModalContent.classList.add('scale-95');
+    setTimeout(() => {
+        transferModal.classList.add('hidden');
+    }, 300);
+}
+
+closeTransferModalBtn.addEventListener('click', closeTransferModal);
+cancelTransferModalBtn.addEventListener('click', closeTransferModal);
+
+// Close modal on clicking outside
+transferModal.addEventListener('click', (e) => {
+    if (e.target === transferModal) {
+        closeTransferModal();
+    }
+});
+
+// Search suggestions javascript
+let searchTimeout;
+
+function showSuggestions() {
+    const searchTerm = document.getElementById('item_search').value.toLowerCase();
+    if (searchTerm.length > 0) {
+        renderSearchSuggestions(searchTerm);
+    }
+}
+
+function hideSuggestions() {
+    // Small delay to allow click events to register
+    setTimeout(() => {
+        document.getElementById('searchSuggestions').classList.add('hidden');
+    }, 200);
+}
+
+function renderSearchSuggestions(searchTerm = '') {
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    const fromStationId = document.getElementById('from_station_id').value;
+    
+    // Filter items for suggestions (more lenient filtering)
+    let suggestedItems = allItems.filter(item => {
+        if (item.value === '') return false;
+        
+        // Filter by station
+        if (fromStationId === 'main') {
+            if (item.stationId !== '' && item.stationId !== null) return false;
+        } else if (fromStationId !== '') {
+            if (item.stationId !== fromStationId) return false;
+        }
+        
+        // More lenient search - match any part of the text
+        if (searchTerm) {
+            return item.text.toLowerCase().includes(searchTerm) || 
+                   item.searchText.includes(searchTerm);
+        }
+        
+        return false;
+    }).slice(0, 8); // Limit to 8 suggestions like YouTube
+
+    if (suggestedItems.length === 0) {
+        suggestionsContainer.classList.add('hidden');
+        return;
+    }
+
+    // Render suggestions
+    suggestionsContainer.innerHTML = suggestedItems.map(item => `
+        <div class="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-150 suggestion-item"
+             onclick="selectSuggestion('${item.value}', '${item.stationId}', '${item.stationName}', '${item.quantity}')">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="font-semibold text-gray-800 text-sm mb-1">${item.text.split(' - Current:')[0]}</div>
+                    <div class="text-xs text-gray-500 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-1 text-xs"></i>
+                        ${item.stationName}
+                    </div>
+                </div>
+                <div class="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">
+                    ${item.quantity} in stock
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    suggestionsContainer.classList.remove('hidden');
+}
+
+function selectSuggestion(itemId, stationId, stationName, quantity) {
+    // Fill the search input with the selected item name
+    const selectedItem = allItems.find(item => item.value === itemId);
+    if (selectedItem) {
+        document.getElementById('item_search').value = selectedItem.text.split(' - Current:')[0];
+    }
+    
+    // Select the item
+    selectItem(itemId, stationId, stationName, quantity);
+    
+    // Hide suggestions
+    document.getElementById('searchSuggestions').classList.add('hidden');
+    
+    // Also hide the main item display
+    document.getElementById('item_display').classList.add('hidden');
+}
+
+// Enhanced filterItemOptions function
+function filterItemOptions() {
+    const searchTerm = document.getElementById('item_search').value.toLowerCase();
+    
+    // Clear previous timeout
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+    }
+    
+    // Show suggestions after a short delay (like YouTube)
+    searchTimeout = setTimeout(() => {
+        if (searchTerm.length > 0) {
+            renderSearchSuggestions(searchTerm);
+            // Also update the main display
+            renderItemDisplay(searchTerm);
+        } else {
+            document.getElementById('searchSuggestions').classList.add('hidden');
+            renderItemDisplay('');
+        }
+    }, 300); // 300ms delay like YouTube
+}
+
+// Enhanced selectItem function
+function selectItem(itemId, stationId, stationName, quantity) {
+    document.getElementById('item_id').value = itemId;
+    document.getElementById('currentStationName').textContent = stationName;
+    document.getElementById('availableQuantity').textContent = `Available: ${quantity}`;
+    document.getElementById('currentStationInfo').classList.remove('hidden');
+    
+    // Update search field with selected item name
+    const selectedItem = allItems.find(item => item.value === itemId);
+    if (selectedItem) {
+        document.getElementById('item_search').value = selectedItem.text.split(' - Current:')[0];
+    }
+    
+    validateTransfer();
+    validateQuantity();
+    
+    // Hide both displays when item is selected
+    document.getElementById('searchSuggestions').classList.add('hidden');
+    document.getElementById('item_display').classList.add('hidden');
+}
+
+// Keyboard navigation for suggestions
+document.getElementById('item_search').addEventListener('keydown', function(e) {
+    const suggestions = document.querySelectorAll('.suggestion-item');
+    const activeSuggestion = document.querySelector('.suggestion-item.bg-blue-100');
+    
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (suggestions.length > 0) {
+            if (!activeSuggestion) {
+                suggestions[0].classList.add('bg-blue-100', 'text-white');
+            } else {
+                const next = activeSuggestion.nextElementSibling;
+                if (next) {
+                    activeSuggestion.classList.remove('bg-blue-100', 'text-white');
+                    next.classList.add('bg-blue-100', 'text-white');
+                }
+            }
+        }
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (suggestions.length > 0) {
+            if (!activeSuggestion) {
+                suggestions[suggestions.length - 1].classList.add('bg-blue-100', 'text-white');
+            } else {
+                const prev = activeSuggestion.previousElementSibling;
+                if (prev) {
+                    activeSuggestion.classList.remove('bg-blue-100', 'text-white');
+                    prev.classList.add('bg-blue-100', 'text-white');
+                }
+            }
+        }
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeSuggestion) {
+            activeSuggestion.click();
+        }
+    }
+});
+
+// Transfer Modal Data Initialization
+let allItems = [];
+
+// Initialize transfer modal data when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing transfer modal data...');
+    
+    // Get the item select element
+    const itemSelect = document.getElementById('item_id');
+    
+    if (itemSelect) {
+        console.log('Found item select with', itemSelect.options.length, 'options');
+        
+        // Populate allItems array from the select options
+        allItems = Array.from(itemSelect.options)
+            .filter(option => option.value !== '') // Remove empty option
+            .map(option => {
+                return {
+                    value: option.value,
+                    text: option.textContent.trim(),
+                    stationId: option.getAttribute('data-station-id') || '',
+                    stationName: option.getAttribute('data-station-name') || 'Main Central Station',
+                    quantity: option.getAttribute('data-quantity') || '0',
+                    searchText: (option.getAttribute('data-item-text') || option.textContent).toLowerCase()
+                };
+            });
+        
+        console.log('Loaded', allItems.length, 'items into allItems array');
+        
+        // Test if we have data
+        if (allItems.length > 0) {
+            console.log('First item:', allItems[0]);
+        } else {
+            console.warn('No items found in allItems array');
+        }
+    } else {
+        console.error('item_id select element not found!');
+    }
+    
+    // Also add the missing functions from the original transfer.blade.php
+    initializeTransferFunctions();
+});
+
+// Add the missing transfer functions
+function initializeTransferFunctions() {
+    // These functions are referenced in your HTML but not defined
+    window.filterItemsByStation = function() {
+        const fromStationId = document.getElementById('from_station_id').value;
+        console.log('Filtering by station:', fromStationId);
+        filterItemOptions(); // Refresh the suggestions
+    };
+
+    window.renderItemDisplay = function(searchTerm = '') {
+        // This function is referenced but you might not need it with the new suggestions
+        console.log('renderItemDisplay called with:', searchTerm);
+    };
+
+    window.updateCurrentStation = function() {
+        const itemSelect = document.getElementById('item_id');
+        const selectedValue = itemSelect.value;
+        const selectedOption = Array.from(itemSelect.options).find(opt => opt.value === selectedValue);
+        
+        if (selectedOption && selectedOption.value) {
+            const stationName = selectedOption.getAttribute('data-station-name');
+            const quantity = selectedOption.getAttribute('data-quantity');
+            document.getElementById('currentStationName').textContent = stationName;
+            document.getElementById('availableQuantity').textContent = `Available: ${quantity}`;
+            document.getElementById('currentStationInfo').classList.remove('hidden');
+            validateTransfer();
+            validateQuantity();
+        } else {
+            document.getElementById('currentStationInfo').classList.add('hidden');
+            document.getElementById('availableQuantity').textContent = 'Available: -';
+        }
+    };
+
+    window.validateTransfer = function() {
+        const itemId = document.getElementById('item_id').value;
+        const toStationSelect = document.getElementById('to_station_id');
+        const transferWarning = document.getElementById('transferWarning');
+        const warningMessage = document.getElementById('warningMessage');
+        
+        if (!itemId || !toStationSelect.value) {
+            transferWarning.classList.add('hidden');
+            return;
+        }
+
+        // Get selected item data
+        const selectedItem = allItems.find(item => item.value === itemId);
+        if (!selectedItem) {
+            transferWarning.classList.add('hidden');
+            return;
+        }
+
+        const fromStationId = selectedItem.stationId || '';
+        const toStationId = toStationSelect.value;
+        const fromStationName = selectedItem.stationName || 'Main Central Station';
+
+        // Convert "main" to empty string for comparison
+        const normalizedFromStationId = fromStationId === '' || fromStationId === null ? 'main' : fromStationId;
+        const normalizedToStationId = toStationId === 'main' ? 'main' : toStationId;
+
+        if (normalizedFromStationId === normalizedToStationId) {
+            warningMessage.textContent = `Cannot transfer to the same station (${fromStationName}). Please select a different destination.`;
+            transferWarning.classList.remove('hidden');
+        } else {
+            transferWarning.classList.add('hidden');
+        }
+    };
+
+    window.validateQuantity = function() {
+        const itemId = document.getElementById('item_id').value;
+        const quantityInput = document.getElementById('quantity');
+        const quantityError = document.getElementById('quantityError');
+        const quantityErrorMessage = document.getElementById('quantityErrorMessage');
+        
+        if (!itemId) {
+            quantityError.classList.add('hidden');
+            return;
+        }
+
+        const selectedItem = allItems.find(item => item.value === itemId);
+        if (!selectedItem) {
+            quantityError.classList.add('hidden');
+            return;
+        }
+
+        const availableQty = parseInt(selectedItem.quantity) || 0;
+        const requestedQty = parseInt(quantityInput.value) || 0;
+
+        if (requestedQty > availableQty) {
+            quantityErrorMessage.textContent = `Insufficient quantity. Available: ${availableQty}, Requested: ${requestedQty}`;
+            quantityError.classList.remove('hidden');
+        } else {
+            quantityError.classList.add('hidden');
+        }
+    };
+}
+
+// Total cost calculation for Add Item modal
+function calculateTotalCost() {
+    const quantity = parseFloat(document.getElementById('quantity_on_hand').value) || 0;
+    const unitCost = parseFloat(document.getElementById('unit_cost').value) || 0;
+    document.getElementById('total_cost').value = (quantity * unitCost).toFixed(2);
+}
+
+// Initialize total cost calculation when DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+    calculateTotalCost();
+});
+
+// Edit Modal Functions - Complete Version
+window.openEditModal = function(itemId) {
+    console.log('🟢 openEditModal called with itemId:', itemId);
+    
+    const modal = document.getElementById('editItemModal');
+    const modalContent = document.getElementById('editItemModalContent');
+    const formDisplay = document.getElementById('editFormDisplay');
+    
+    if (!modal) {
+        console.error('❌ Edit modal not found!');
+        return;
+    }
+    
+    // Show loading state
+    formDisplay.innerHTML = `
+        <div class="flex justify-center items-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <span class="ml-3 text-gray-600">Loading item data...</span>
+        </div>
+    `;
+    
+    // Show modal with animation
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => {
+        if (modalContent) {
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+    }, 10);
+    
+    // Load the edit form via AJAX
+    fetch(`/items/${itemId}/edit-form`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            formDisplay.innerHTML = html;
+            
+            // Re-initialize any JavaScript for the loaded form
+            initializeEditForm();
+        })
+        .catch(error => {
+            console.error('Error loading edit form:', error);
+            formDisplay.innerHTML = `
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700">Error loading item data. Please try again.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+};
+
+window.closeEditModal = function() {
+    const modal = document.getElementById('editItemModal');
+    const modalContent = document.getElementById('editItemModalContent');
+    
+    if (!modal) return;
+    
+    if (modalContent) {
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+    }
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+};
+
+// Initialize edit form functionality
+function initializeEditForm() {
+    // Recalculate total cost when quantities change
+    const quantityInput = document.getElementById('quantity_on_hand');
+    const unitCostInput = document.getElementById('unit_cost');
+    
+    if (quantityInput && unitCostInput) {
+        quantityInput.addEventListener('input', calculateEditTotalCost);
+        unitCostInput.addEventListener('input', calculateEditTotalCost);
+    }
+    
+    // Initialize total cost calculation
+    calculateEditTotalCost();
+}
+
+function calculateEditTotalCost() {
+    const quantity = parseFloat(document.getElementById('quantity_on_hand')?.value) || 0;
+    const unitCost = parseFloat(document.getElementById('unit_cost')?.value) || 0;
+    const totalCostInput = document.getElementById('total_cost');
+    
+    if (totalCostInput) {
+        totalCostInput.value = (quantity * unitCost).toFixed(2);
+    }
+}
+
+// Event listeners for edit buttons
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 Setting up edit button event listeners...');
+    
+    // Edit buttons
+    document.querySelectorAll('.edit-item-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-item-id');
+            console.log('✏️ Edit button clicked for item:', itemId);
+            window.openEditModal(itemId);
+        });
+    });
+    
+    // Close modal button
+    const closeEditModalBtn = document.getElementById('closeEditModal');
+    if (closeEditModalBtn) {
+        closeEditModalBtn.addEventListener('click', window.closeEditModal);
+    }
+    
+    // Close modal when clicking outside
+    const editModal = document.getElementById('editItemModal');
+    if (editModal) {
+        editModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.closeEditModal();
+            }
+        });
+    }
+    
+    console.log('✅ Edit modal setup complete');
+});
+
+        // Compute life_span_years from date_acquired and date_expiry before submit
+        function computeLifeSpanYearsForForm() {
+            const dateAcqEl = document.getElementById('date_acquired');
+            const dateExpEl = document.getElementById('date_expiry');
+            const hiddenEl = document.getElementById('life_span_years_hidden');
+            if (!hiddenEl || !dateExpEl) return;
+
+            const dateExp = dateExpEl.value;
+            const dateAcq = dateAcqEl ? dateAcqEl.value : '';
+
+            if (dateExp && dateAcq) {
+                const acq = new Date(dateAcq);
+                const exp = new Date(dateExp);
+                let years = exp.getFullYear() - acq.getFullYear();
+                if (exp.getMonth() < acq.getMonth() || (exp.getMonth() === acq.getMonth() && exp.getDate() < acq.getDate())) {
+                    years--;
+                }
+                hiddenEl.value = Math.max(0, years);
+            } else if (dateExp && !dateAcq) {
+                const today = new Date();
+                const exp = new Date(dateExp);
+                let years = exp.getFullYear() - today.getFullYear();
+                if (exp.getMonth() < today.getMonth() || (exp.getMonth() === today.getMonth() && exp.getDate() < today.getDate())) {
+                    years--;
+                }
+                hiddenEl.value = Math.max(0, years);
+            } else {
+                hiddenEl.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateExpEl = document.getElementById('date_expiry');
+            const dateAcqEl = document.getElementById('date_acquired');
+            if (dateExpEl) dateExpEl.addEventListener('change', computeLifeSpanYearsForForm);
+            if (dateAcqEl) dateAcqEl.addEventListener('change', computeLifeSpanYearsForForm);
+            const form = document.querySelector('form');
+            if (form) form.addEventListener('submit', computeLifeSpanYearsForForm);
+        });
+
+</script>
+
+    </div>
+</div>
+
+    
 </body>
 </html>

@@ -106,7 +106,6 @@
 </head>
 
 <body class="h-screen overflow-hidden">
-    <!-- Carousel Background -->
     <div class="carousel-container">
         <div class="carousel-image" style="background-image: url('/Img/Carousel1.png');" data-image="1"></div>
         <div class="carousel-image" style="background-image: url('/Img/Carousel2.png');" data-image="2"></div>
@@ -115,7 +114,6 @@
         <div class="carousel-image" style="background-image: url('/Img/Carousel5.png');" data-image="5"></div>
     </div>
 
-    <!-- Top Navigation Bar -->
     <div class="sticky top-0 z-20 bg-gradient-to-r from-red-800 via-red-700 to-red-800 text-white p-2 flex justify-between items-center shadow-xl border-b-2 border-red-900">
         <div class="flex items-center space-x-3">
             <img src="/Img/Icon.png" alt="BFP Icon" class="h-8 w-8 rounded-lg shadow-lg ring-2 ring-white/20">
@@ -126,7 +124,6 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl border-l border-gray-700">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-700">
@@ -142,6 +139,12 @@
                 <a href="{{ route('admin.users') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
                     <i class="fas fa-users mr-3"></i>Users
                 </a>
+                <a href="{{ route('stations.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-users mr-3"></i>Stations
+                </a>
+                <a href="{{ route('reports.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-users mr-3"></i>Full Reports
+                </a>
                 <form method="POST" action="{{ route('logout') }}" class="block">
                     @csrf
                     <button type="submit" class="w-full text-left px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-red-600 hover:to-rose-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
@@ -152,13 +155,10 @@
         </div>
     </div>
 
-    <!-- Sidebar Overlay -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
 
-    <!-- Main Content -->
     <div class="flex justify-center p-2 h-[calc(100vh-40px)] overflow-hidden mb-4">
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-[1280px] border border-white/20 flex flex-col h-full">
-            <!-- Header Section - Sticky -->
             <div class="flex-shrink-0 bg-white/98 backdrop-blur-md shadow-xl border-b border-gray-200 rounded-t-2xl">
                 <div class="p-1.5">
                     <div class="flex items-center justify-between mb-1">
@@ -182,7 +182,6 @@
                     </div>
                     @endif
 
-                    <!-- Filter Form -->
                     <form method="GET" action="{{ route('reports.index') }}" class="mb-1">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-1">
                             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border-l-2 border-blue-500">
@@ -221,7 +220,6 @@
                 </div>
             </div>
 
-            <!-- Reports Table -->
             <div class="overflow-x-auto overflow-y-auto rounded-b-2xl flex-1 min-h-0">
                 <table class="w-full">
                     <thead class="sticky top-0 z-10">
@@ -235,9 +233,15 @@
                             <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
                                 <i class="fas fa-box mr-1.5 text-[10px]"></i>Item
                             </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-sort-numeric-up mr-1.5 text-[10px]"></i>Quantity Change
+                            
+                            <th class="px-1 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider w-16">
+                                <i class="fas fa-history mr-1 text-[10px]"></i>Prev
                             </th>
+
+                            <th class="px-1 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider w-16">
+                                <i class="fas fa-sort-numeric-up mr-1 text-[10px]"></i>Qty Chg
+                            </th>
+
                             <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
                                 <i class="fas fa-dollar-sign mr-1.5 text-[10px]"></i>Cost Change
                             </th>
@@ -255,8 +259,8 @@
                     <tbody>
                         @forelse($reports as $index => $report)
                         <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
-                            <td class="px-3 py-2 text-[9px] text-gray-700">
-                                <i class="fas fa-clock mr-2 text-gray-400"></i>{{ $report->created_at->format('M d, Y H:i') }}
+                            <td class="px-3 py-2 text-[9px] text-gray-700 whitespace-nowrap">
+                                <i class="fas fa-clock mr-2 text-gray-400"></i>{{ $report->created_at->format('M d, H:i') }}
                             </td>
                             <td class="px-3 py-2 text-[9px]">
                                 <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
@@ -269,14 +273,32 @@
                             <td class="px-3 py-2 text-[9px] text-gray-900 font-semibold">
                                 <i class="fas fa-box-open mr-2 text-blue-500"></i>{{ $report->item->name }}
                             </td>
-                            <td class="px-3 py-2 text-[9px] text-gray-900 font-bold">
+
+                            <td class="px-1 py-2 text-[9px] text-gray-700 font-medium text-center">
+                                <div class="flex items-center justify-center">
+                                    <div class="bg-gray-100 border border-gray-200 text-gray-600 px-1.5 py-0.5 rounded shadow-sm min-w-[30px]">
+                                        @if($report->item)
+                                        @if($report->type == 'addition')
+                                            {{ $report->item->quantity_on_hand - $report->quantity_change }}
+                                        @else
+                                            {{ $report->item->quantity_on_hand + $report->quantity_change }}
+                                        @endif
+                                        @else
+                                        N/A
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="px-1 py-2 text-[9px] text-gray-900 font-bold text-center">
                                 @if($report->type == 'addition')
-                                <span class="text-green-600 bg-green-50 px-2 py-1 rounded-full text-[9px]">+{{ $report->quantity_change }}</span>
+                                <span class="text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full text-[9px] inline-block min-w-[30px] text-center">+{{ $report->quantity_change }}</span>
                                 @else
-                                <span class="text-red-600 bg-red-50 px-2 py-1 rounded-full text-[9px]">-{{ $report->quantity_change }}</span>
+                                <span class="text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full text-[9px] inline-block min-w-[30px] text-center">-{{ $report->quantity_change }}</span>
                                 @endif
                             </td>
-                            <td class="px-3 py-2 text-[9px] font-bold">
+
+                            <td class="px-3 py-2 text-[9px] font-bold whitespace-nowrap">
                                 @if($report->cost_change > 0)
                                 <span class="text-green-700 bg-green-50 px-2 py-1 rounded-full text-[9px]">
                                     <i class="fas fa-arrow-up mr-1"></i>+₱{{ number_format($report->cost_change, 2) }}
@@ -290,10 +312,10 @@
                             <td class="px-3 py-2 text-[9px] text-gray-700">
                                 <i class="fas fa-comment-alt mr-2 text-gray-400"></i>{{ $report->reason ?? 'N/A' }}
                             </td>
-                            <td class="px-3 py-2 text-[9px] text-gray-700">
+                            <td class="px-3 py-2 text-[9px] text-gray-700 whitespace-nowrap">
                                 <i class="fas fa-user-circle mr-2 text-gray-400"></i>{{ $report->user->name }}
                             </td>
-                            <td class="px-3 py-2 text-xs">
+                            <td class="px-3 py-2 text-xs whitespace-nowrap">
                                 <form action="{{ route('reports.destroy', $report) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this report?')">
                                     @csrf
                                     @method('DELETE')
@@ -305,7 +327,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-16 text-center bg-gradient-to-br from-gray-50 to-gray-100">
+                            <td colspan="9" class="px-6 py-16 text-center bg-gradient-to-br from-gray-50 to-gray-100">
                                 <div class="flex flex-col items-center">
                                     <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
                                     <p class="text-xl font-bold text-gray-600 mb-2">No reports found</p>
@@ -318,7 +340,6 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             @if($reports->hasPages())
             <div class="flex-shrink-0 p-1.5 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination mt-2 mb-4 rounded-b-xl">
                 <div class="flex items-center justify-between gap-2 h-full">

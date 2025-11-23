@@ -117,6 +117,10 @@
                 <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
                     <i class="fas fa-users mr-2"></i>User Management
                 </a>
+                <a href="{{ route('stations.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
+                    <i class="fas fa-chart-bar mr-2"></i>Stations
+                </a>
+                
                 <a href="{{ route('reports.index') }}" class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded">
                     <i class="fas fa-chart-bar mr-2"></i>Full Reports
                 </a>
