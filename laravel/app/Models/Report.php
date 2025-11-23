@@ -14,6 +14,8 @@ class Report extends Model
         'quantity_change',
         'cost_change',
         'reason',
+        'item_name',
+        'item_sku',
         'from_station_id',
         'to_station_id',
     ];

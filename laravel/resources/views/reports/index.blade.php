@@ -233,6 +233,9 @@
                             <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
                                 <i class="fas fa-tag mr-1.5 text-[10px]"></i>Type
                             </th>
+                               <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                   <i class="fas fa-train mr-1.5 text-[10px]"></i>From Station
+                               </th>
                             
                             
                             
@@ -262,7 +265,7 @@
                         @forelse($reports as $index => $report)
                         <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
                             <td class="px-3 py-2 text-[9px] text-gray-900 font-semibold">
-                                <i class="fas fa-box-open mr-2 text-blue-500"></i>{{ $report->item->name }}
+                                   <i class="fas fa-box-open mr-2 text-blue-500"></i>{{ optional($report->item)->name ?? $report->item_name }}
                             </td>
                             <td class="px-3 py-2 text-[9px] text-gray-700 whitespace-nowrap">
                                 <i class="fas fa-clock mr-2 text-gray-400"></i>{{ $report->created_at->format('M d, H:i') }}
@@ -275,6 +278,9 @@
                                     @endif">
                                     <i class="fas fa-circle text-[6px] mr-1"></i>{{ ucfirst($report->type) }}
                                 </span>
+                                </td>
+                                <td class="px-3 py-2 text-[9px] text-gray-700 whitespace-nowrap">
+                                    <i class="fas fa-train mr-2 text-gray-400"></i>{{ optional($report->fromStation)->name ?? '' }}
                             </td>
                             
 
