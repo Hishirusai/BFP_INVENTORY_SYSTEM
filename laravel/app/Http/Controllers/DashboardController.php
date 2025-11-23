@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\Supplier;
 use App\Models\Report;
+use App\Models\Station;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -31,7 +32,7 @@ class DashboardController extends Controller
         }
 
         // Paginate items (10 per page)
-        $items = $query->latest()->paginate(10);
+        $items = $query->with(['supplier', 'station'])->latest()->paginate(10);
         
         // Stats for Main Central Station only
         $suppliersCount = Supplier::count();
@@ -55,6 +56,12 @@ class DashboardController extends Controller
             ->distinct()
             ->pluck('unit');
 
-        return view('dashboard', compact('items', 'suppliersCount', 'itemsCount', 'lowStockItems', 'totalInventoryValue', 'unserviceableItems', 'recentReports', 'units'));
+        $stations = Station::all();
+
+        $items = $query->with(['supplier', 'station'])->latest()->paginate(10);
+
+        $allItemsForTransfer = Item::with('station')->get();
+
+        return view('dashboard', compact('items', 'suppliersCount', 'itemsCount', 'lowStockItems', 'totalInventoryValue', 'unserviceableItems', 'recentReports', 'units', 'stations', 'allItemsForTransfer'));
     }
 }
