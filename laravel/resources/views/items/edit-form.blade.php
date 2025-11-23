@@ -124,7 +124,7 @@
         </div>
     </div>
 
-    <!-- Condition and Life Span -->
+    <!-- Condition and Date Expiry -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
@@ -139,12 +139,11 @@
         </div>
 
         <div>
-            <label for="life_span_years" class="block text-sm font-medium text-gray-700 mb-2">Life Span (Years)</label>
-            <input type="number" name="life_span_years" id="life_span_years" min="0"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                value="{{ old('life_span_years', $item->life_span_years) }}"
-                placeholder="e.g., 5">
-            <p class="text-xs text-gray-500 mt-1">Expected life span in years</p>
+             <label for="date_expiry" class="block text-sm font-medium text-gray-700 mb-2">Date Expiry (dd/mm/yyyy)</label>
+                                <input type="date" id="date_expiry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value="{{ old('date_expiry', ($item->date_acquired && $item->life_span_years) ? $item->date_acquired->copy()->addYears($item->life_span_years)->format('Y-m-d') : '') }}">
+                                <input type="hidden" name="life_span_years" id="life_span_years_hidden" value="{{ old('life_span_years', $item->life_span_years) }}">
+                                <p class="text-xs text-gray-500 mt-1">Life span (years) will be computed automatically.</p>
             @error('life_span_years')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -157,6 +156,10 @@
             class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 font-semibold">
             Cancel
         </button>
+        <button type="submit" name="apply" value="1"
+                            class="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
+                            <i class="fas fa-check mr-2"></i>Apply
+                        </button>
         <button type="submit"
             class="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold">
             <i class="fas fa-save mr-2"></i>Update Item
@@ -189,4 +192,45 @@ function calculateEditTotalCost() {
         totalCostInput.value = (quantity * unitCost).toFixed(2);
     }
 }
+
+ // Compute life_span_years from date_acquired and date_expiry before submit
+        function computeLifeSpanYearsForForm() {
+            const dateAcqEl = document.getElementById('date_acquired');
+            const dateExpEl = document.getElementById('date_expiry');
+            const hiddenEl = document.getElementById('life_span_years_hidden');
+            if (!hiddenEl || !dateExpEl) return;
+
+            const dateExp = dateExpEl.value;
+            const dateAcq = dateAcqEl ? dateAcqEl.value : '';
+
+            if (dateExp && dateAcq) {
+                const acq = new Date(dateAcq);
+                const exp = new Date(dateExp);
+                let years = exp.getFullYear() - acq.getFullYear();
+                if (exp.getMonth() < acq.getMonth() || (exp.getMonth() === acq.getMonth() && exp.getDate() < acq.getDate())) {
+                    years--;
+                }
+                hiddenEl.value = Math.max(0, years);
+            } else if (dateExp && !dateAcq) {
+                const today = new Date();
+                const exp = new Date(dateExp);
+                let years = exp.getFullYear() - today.getFullYear();
+                if (exp.getMonth() < today.getMonth() || (exp.getMonth() === today.getMonth() && exp.getDate() < today.getDate())) {
+                    years--;
+                }
+                hiddenEl.value = Math.max(0, years);
+            } else {
+                hiddenEl.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateExpEl = document.getElementById('date_expiry');
+            const dateAcqEl = document.getElementById('date_acquired');
+            if (dateExpEl) dateExpEl.addEventListener('change', computeLifeSpanYearsForForm);
+            if (dateAcqEl) dateAcqEl.addEventListener('change', computeLifeSpanYearsForForm);
+            const form = document.querySelector('form');
+            if (form) form.addEventListener('submit', computeLifeSpanYearsForForm);
+        });
+    
 </script>
