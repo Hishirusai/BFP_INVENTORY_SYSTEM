@@ -22,18 +22,8 @@ class ItemTransferController extends Controller
         // Get all stations (including Main Central Station option)
         $stations = Station::where('is_active', true)->get();
         
-        // Get items based on from_station filter
-        $itemsQuery = Item::with('station');
-        if ($fromStationId === 'main' || $fromStationId === '') {
-            // Show Main Central Station items (station_id is null)
-            $itemsQuery->whereNull('station_id');
-        } elseif ($fromStationId) {
-            // Show items from specific station
-            $itemsQuery->where('station_id', $fromStationId);
-        }
-        // If no filter, show all items
-        
-        $items = $itemsQuery->get();
+        // Load ALL items and let the client filter/search them in the UI
+        $items = Item::with('station')->get();
         $selectedItemId = $request->get('item_id');
         
         return view('items.transfer', compact('items', 'stations', 'selectedItemId', 'fromStationId'));

@@ -248,10 +248,13 @@
         });
 
         function filterItemsByStation() {
+            // Client-side filter: clear current selection and re-render the item list
             const fromStationId = document.getElementById('from_station_id').value;
-            const url = new URL(window.location.href);
-            url.searchParams.set('from_station_id', fromStationId);
-            window.location.href = url.toString();
+            document.getElementById('item_search').value = '';
+            document.getElementById('item_id').value = '';
+            const currentInfo = document.getElementById('currentStationInfo');
+            if (currentInfo) currentInfo.classList.add('hidden');
+            renderItemDisplay('');
         }
 
         function filterItemOptions() {
