@@ -279,7 +279,7 @@
                         </div>
                     </div>
 
-                    <!-- Condition and Life Span -->
+                    <!-- Condition and Date Expiry -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
@@ -294,12 +294,11 @@
                         </div>
 
                         <div>
-                            <label for="life_span_years" class="block text-sm font-medium text-gray-700 mb-2">Life Span (Years)</label>
-                            <input type="number" name="life_span_years" id="life_span_years" min="0"
-                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value="{{ old('life_span_years') }}"
-                                placeholder="e.g., 5">
-                            <p class="text-xs text-gray-500 mt-1">Expected life span in years</p>
+                            <label for="date_expiry" class="block text-sm font-medium text-gray-700 mb-2">Date Expiry (dd/mm/yyyy)</label>
+                                <input type="date" id="date_expiry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value="{{ old('date_expiry', '') }}">
+                                <input type="hidden" name="life_span_years" id="life_span_years_hidden" value="{{ old('life_span_years') }}">
+                                <p class="text-xs text-gray-500 mt-1">Life span (years) will be computed automatically.</p>
                             @error('life_span_years')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -370,6 +369,45 @@
         // Calculate on page load if values exist
         document.addEventListener('DOMContentLoaded', function() {
             calculateTotalCost();
+        });
+        // Compute life_span_years from date_acquired and date_expiry before submit
+        function computeLifeSpanYearsForForm() {
+            const dateAcqEl = document.getElementById('date_acquired');
+            const dateExpEl = document.getElementById('date_expiry');
+            const hiddenEl = document.getElementById('life_span_years_hidden');
+            if (!hiddenEl || !dateExpEl) return;
+
+            const dateExp = dateExpEl.value;
+            const dateAcq = dateAcqEl ? dateAcqEl.value : '';
+
+            if (dateExp && dateAcq) {
+                const acq = new Date(dateAcq);
+                const exp = new Date(dateExp);
+                let years = exp.getFullYear() - acq.getFullYear();
+                if (exp.getMonth() < acq.getMonth() || (exp.getMonth() === acq.getMonth() && exp.getDate() < acq.getDate())) {
+                    years--;
+                }
+                hiddenEl.value = Math.max(0, years);
+            } else if (dateExp && !dateAcq) {
+                const today = new Date();
+                const exp = new Date(dateExp);
+                let years = exp.getFullYear() - today.getFullYear();
+                if (exp.getMonth() < today.getMonth() || (exp.getMonth() === today.getMonth() && exp.getDate() < today.getDate())) {
+                    years--;
+                }
+                hiddenEl.value = Math.max(0, years);
+            } else {
+                hiddenEl.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateExpEl = document.getElementById('date_expiry');
+            const dateAcqEl = document.getElementById('date_acquired');
+            if (dateExpEl) dateExpEl.addEventListener('change', computeLifeSpanYearsForForm);
+            if (dateAcqEl) dateAcqEl.addEventListener('change', computeLifeSpanYearsForForm);
+            const form = document.querySelector('form');
+            if (form) form.addEventListener('submit', computeLifeSpanYearsForForm);
         });
     </script>
 </body>

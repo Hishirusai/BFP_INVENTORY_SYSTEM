@@ -120,12 +120,15 @@ class ItemController extends Controller
 
         $item->update($request->all());
 
-        // --- FIX START: Redirect Logic ---
+        // If user clicked the Apply button, save and stay on the edit page
+        if ($request->has('apply')) {
+            return redirect()->route('items.edit', $item)->with('success', 'Item updated successfully!');
+        }
+
         // If the request came with a 'redirect_to' parameter (like from the Station view), go there.
         if ($request->has('redirect_to') && $request->redirect_to) {
             return redirect($request->redirect_to)->with('success', 'Item updated successfully!');
         }
-        // --- FIX END ---
 
         // Default fallback to main dashboard
         return redirect()->route('dashboard')->with('success', 'Item updated successfully!');

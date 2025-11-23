@@ -256,7 +256,7 @@
                     <i class="fas fa-check-circle mr-1.5"></i>Condition
                 </th>
                 <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
-                    <i class="fas fa-clock mr-1.5"></i>Life Span
+                    <i class="fas fa-clock mr-1.5"></i>Date Expiry
                 </th>
                 <th class="px-3 py-2 text-left text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                     <i class="fas fa-cog mr-1.5"></i>Actions
@@ -292,7 +292,7 @@
                                     @endif">
                                     <i class="fas fa-circle text-[5px] mr-1"></i>{{ ucfirst($item->condition ?? 'serviceable') }}
                                     @if($isUnserviceable && $item->condition != 'unserviceable')
-                                    <i class="fas fa-exclamation-triangle ml-1" title="Unserviceable due to life span"></i>
+                                    <i class="fas fa-exclamation-triangle ml-1" title="Unserviceable due to date expiry"></i>
                                     @endif
                                 </span>
                             </td>
