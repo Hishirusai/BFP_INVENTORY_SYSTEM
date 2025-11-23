@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - BFP Inventory System</title>
+    <title>Users - BFP Inventory System</title>
     <link rel="icon" type="image/x-icon" href="/Img/Icon.png">
     <style>
         @font-face {
@@ -193,7 +193,7 @@
                 <div class="p-2">
                     <div class="flex items-center justify-center mb-1">
                         <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
-                            <i class="fas fa-users mr-2 text-blue-600"></i>USER MANAGEMENT
+                            <i class="fas fa-users mr-2 text-blue-600"></i>USERS
                         </h2>
                     </div>
                 </div>

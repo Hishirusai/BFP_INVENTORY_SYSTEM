@@ -225,14 +225,16 @@
                     <thead class="sticky top-0 z-10">
                         <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 text-white shadow-lg">
                             <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                <i class="fas fa-box mr-1.5 text-[10px]"></i>Item
+                            </th>
+                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
                                 <i class="fas fa-calendar mr-1.5 text-[10px]"></i>Date
                             </th>
                             <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
                                 <i class="fas fa-tag mr-1.5 text-[10px]"></i>Type
                             </th>
-                            <th class="px-3 py-1.5 text-left text-[10px] font-bold uppercase tracking-wider">
-                                <i class="fas fa-box mr-1.5 text-[10px]"></i>Item
-                            </th>
+                            
+                            
                             
                             <th class="px-1 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider w-16">
                                 <i class="fas fa-history mr-1 text-[10px]"></i>Prev
@@ -259,9 +261,13 @@
                     <tbody>
                         @forelse($reports as $index => $report)
                         <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
+                            <td class="px-3 py-2 text-[9px] text-gray-900 font-semibold">
+                                <i class="fas fa-box-open mr-2 text-blue-500"></i>{{ $report->item->name }}
+                            </td>
                             <td class="px-3 py-2 text-[9px] text-gray-700 whitespace-nowrap">
                                 <i class="fas fa-clock mr-2 text-gray-400"></i>{{ $report->created_at->format('M d, H:i') }}
                             </td>
+                            
                             <td class="px-3 py-2 text-[9px]">
                                 <span class="px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm
                                     @if($report->type == 'addition') bg-gradient-to-r from-green-400 to-emerald-500 text-white
@@ -270,9 +276,7 @@
                                     <i class="fas fa-circle text-[6px] mr-1"></i>{{ ucfirst($report->type) }}
                                 </span>
                             </td>
-                            <td class="px-3 py-2 text-[9px] text-gray-900 font-semibold">
-                                <i class="fas fa-box-open mr-2 text-blue-500"></i>{{ $report->item->name }}
-                            </td>
+                            
 
                             <td class="px-1 py-2 text-[9px] text-gray-700 font-medium text-center">
                                 <div class="flex items-center justify-center">

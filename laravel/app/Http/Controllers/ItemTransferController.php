@@ -88,10 +88,10 @@ class ItemTransferController extends Controller
             ->first();
 
         if ($destinationItem) {
-            // Item exists at destination - add to its quantity
+            // Item exists at destination - add to its quantity (save quietly to avoid observer reports)
             $destinationItem->quantity_on_hand += $transferQuantity;
             $destinationItem->total_cost = $destinationItem->quantity_on_hand * $destinationItem->unit_cost;
-            $destinationItem->save();
+            $destinationItem->saveQuietly();
         } else {
             // Item doesn't exist at destination - create new item entry with unique SKU
             $baseSku = $sourceItem->sku;
@@ -112,50 +112,53 @@ class ItemTransferController extends Controller
                 $skuCounter++;
             }
             
-            $destinationItem = Item::create([
-                'name' => $sourceItem->name,
-                'sku' => $newSku,
-                'description' => $sourceItem->description,
-                'supplier_id' => $sourceItem->supplier_id,
-                'station_id' => $toStationId,
-                'unit' => $sourceItem->unit,
-                'unit_cost' => $unitCost,
-                'total_cost' => $transferQuantity * $unitCost,
-                'quantity_on_hand' => $transferQuantity,
-                'reorder_level' => $sourceItem->reorder_level,
-                'status' => $sourceItem->status,
-                'condition' => $sourceItem->condition ?? 'serviceable',
-                'life_span_years' => $sourceItem->life_span_years,
-                'date_acquired' => $sourceItem->date_acquired,
-                'is_active' => $sourceItem->is_active,
-            ]);
+            // Create the destination item without firing model events (prevents observer reports)
+            $destinationItem = \Illuminate\Database\Eloquent\Model::withoutEvents(function() use ($sourceItem, $unitCost, $transferQuantity, $toStationId, $newSku) {
+                return Item::create([
+                    'name' => $sourceItem->name,
+                    'sku' => $newSku,
+                    'description' => $sourceItem->description,
+                    'supplier_id' => $sourceItem->supplier_id,
+                    'station_id' => $toStationId,
+                    'unit' => $sourceItem->unit,
+                    'unit_cost' => $unitCost,
+                    'total_cost' => $transferQuantity * $unitCost,
+                    'quantity_on_hand' => $transferQuantity,
+                    'status' => $sourceItem->status,
+                    'condition' => $sourceItem->condition ?? 'serviceable',
+                    'life_span_years' => $sourceItem->life_span_years,
+                    'date_acquired' => $sourceItem->date_acquired,
+                    'is_active' => $sourceItem->is_active,
+                ]);
+            });
         }
 
         // Reduce quantity from source item
         $sourceItem->quantity_on_hand -= $transferQuantity;
         $sourceItem->total_cost = $sourceItem->quantity_on_hand * $sourceItem->unit_cost;
         
-        // Update source item status if quantity is low
-        if ($sourceItem->quantity_on_hand <= $sourceItem->reorder_level) {
+        // Update source item status: treat zero as low stock. Save quietly to avoid duplicate reports.
+        if ($sourceItem->quantity_on_hand == 0) {
             $sourceItem->status = 'low_stock';
         }
-        
-        $sourceItem->save();
+
+        $sourceItem->saveQuietly();
 
         // Create a transfer report
+        $fromStationName = $fromStationId ? \App\Models\Station::find($fromStationId)->name : 'Main Central Station';
+        $toStationName = $toStationId ? \App\Models\Station::find($toStationId)->name : 'Main Central Station';
+
+        // Create a single authoritative transfer report with explicit station names
         Report::create([
             'type' => 'transfer',
             'item_id' => $sourceItem->id,
             'user_id' => auth()->id(),
             'quantity_change' => $transferQuantity,
             'cost_change' => $transferQuantity * $unitCost,
-            'reason' => $request->reason ?? 'Item transfer from station to station',
+            'reason' => $request->reason ?? "Transfer from {$fromStationName} to {$toStationName}",
             'from_station_id' => $fromStationId,
             'to_station_id' => $toStationId,
         ]);
-
-        $fromStationName = $fromStationId ? \App\Models\Station::find($fromStationId)->name : 'Main Central Station';
-        $toStationName = $toStationId ? \App\Models\Station::find($toStationId)->name : 'Main Central Station';
 
         return redirect()->route('dashboard')->with('success', 
             "Successfully transferred {$transferQuantity} {$sourceItem->unit} of {$sourceItem->name} from {$fromStationName} to {$toStationName}!");
