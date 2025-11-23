@@ -189,7 +189,8 @@ class ItemController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
-
+    }
+    
         /**
  * Show the form for editing the specified resource as a partial for modal.
  */
