@@ -770,101 +770,91 @@
             
             // Perform the actual search
             function performSearch(searchTerm) {
-                currentSearchTerm = searchTerm;
-                searchSuggestions.style.display = 'none';
-                
-                let totalQuantity = 0;
-                let stationsWithEquipment = 0;
-                
-                // Clear current stations grid
-                stationsGrid.innerHTML = '';
-                
-                // Show only stations that have the searched equipment
-                originalStations.forEach(station => {
-                    const matchingItems = station.items.filter(item => 
-                        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                    
-                    if (matchingItems.length > 0) {
-                        stationsWithEquipment++;
-                        
-                        // Calculate station total for the searched equipment
-                        let stationTotal = 0;
-                        matchingItems.forEach(item => {
-                            stationTotal += item.quantity || 1;
-                        });
-                        
-                        totalQuantity += stationTotal;
-                        
-                        // Clone the station card and update it
-                        const cardClone = station.element.cloneNode(true);
-                        
-                        // Update the station's item count to show equipment quantity
-                        const countBadge = cardClone.querySelector('.station-item-count');
-                        if (countBadge) {
-                            countBadge.innerHTML = `${stationTotal} <span class="station-equipment-count">${searchTerm}</span>`;
-                        }
-                        
-                        // Add to the stations grid
-                        stationsGrid.appendChild(cardClone);
-                    }
+        currentSearchTerm = searchTerm;
+        searchSuggestions.style.display = 'none';
+
+        let totalQuantity = 0;
+        let stationsWithEquipment = 0;
+
+        // Clear current stations grid
+        stationsGrid.innerHTML = '';
+
+        // Show only stations that have the searched equipment
+        originalStations.forEach(station => {
+            const matchingItems = station.items.filter(item =>
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            if (matchingItems.length > 0) {
+                stationsWithEquipment++;
+
+                // Calculate station total for the searched equipment
+                let stationTotal = 0;
+                matchingItems.forEach(item => {
+                    stationTotal += item.quantity_on_hand || 1;
                 });
-                
-                // Update total quantity display (only show actual number after search)
-                updateTotalQuantity(totalQuantity);
-                
-                // Show search results info with proper spacing
-                if (stationsWithEquipment > 0) {
-                    searchResultsInfo.innerHTML = `
-                        <strong>Search Results:</strong> Found "${searchTerm}" in ${stationsWithEquipment} station(s)
-                        <span class="equipment-quantity">Total: ${totalQuantity}</span>
-                    `;
-                    searchResultsInfo.style.display = 'block';
-                } else {
-                    searchResultsInfo.innerHTML = `
-                        <strong>No Results:</strong> No stations found with equipment "${searchTerm}"
-                    `;
-                    searchResultsInfo.style.display = 'block';
-                    
-                    // Show no results message
-                    stationsGrid.innerHTML = `
-                        <div class="col-span-full text-center py-16">
-                            <i class="fas fa-search text-6xl text-gray-400 mb-4"></i>
-                            <p class="text-xl font-bold text-gray-600 mb-2">No stations found with "${searchTerm}"</p>
-                            <p class="text-sm text-gray-500">Try searching for different equipment</p>
-                        </div>
-                    `;
+
+                totalQuantity += stationTotal;
+
+                // Clone the station card
+                const cardClone = station.element.cloneNode(true);
+
+                // Update the station's item count to show equipment quantity
+                const countBadge = cardClone.querySelector('.station-item-count');
+                if (countBadge) {
+                    let itemQuantitiesHTML = '';
+                    matchingItems.forEach(item => {
+                        itemQuantitiesHTML += `
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-gray-800 font-semibold text-sm">${item.name}</span>
+                                <span class="text-white font-semibold text-sm ml-2">${item.quantity_on_hand} ${item.unit}</span>
+                            </div>
+                        `;
+                    });
+                    countBadge.innerHTML = itemQuantitiesHTML;
                 }
+
+                stationsGrid.appendChild(cardClone);
             }
-            
-            // Reset search and show all stations
-            function resetSearch() {
-                currentSearchTerm = '';
-                searchInput.value = '';
-                searchIcon.style.opacity = '1';
-                clearSearchInput.classList.remove('visible');
-                searchSuggestions.style.display = 'none';
-                searchResultsInfo.style.display = 'none';
-                
-                // Restore all stations
-                stationsGrid.innerHTML = '';
-                originalStations.forEach(station => {
-                    stationsGrid.appendChild(station.element.cloneNode(true));
-                });
-                
-                // Reset total quantity display to "--"
-                updateTotalQuantity();
-            }
-            
-            // Update total quantity display
-            function updateTotalQuantity(quantity) {
-                if (quantity !== undefined) {
-                    totalQuantityValue.textContent = quantity;
-                } else {
-                    // Reset to "--" when no search is active
-                    totalQuantityValue.textContent = '--';
-                }
-            }
+        });
+
+        // Update total quantity display
+        updateTotalQuantity(totalQuantity);
+
+        // Show search results info
+        searchResultsInfo.innerHTML = stationsWithEquipment > 0
+            ? `<strong>Search Results:</strong> Found "${searchTerm}" in ${stationsWithEquipment} station(s)
+               <span class="equipment-quantity">Total: ${totalQuantity}</span>`
+            : `<strong>No Results:</strong> No stations found with equipment "${searchTerm}"`;
+
+        searchResultsInfo.style.display = 'block';
+
+        if (stationsWithEquipment === 0) {
+            stationsGrid.innerHTML = `
+                <div class="col-span-full text-center py-16">
+                    <i class="fas fa-search text-6xl text-gray-400 mb-4"></i>
+                    <p class="text-xl font-bold text-gray-600 mb-2">No stations found with "${searchTerm}"</p>
+                    <p class="text-sm text-gray-500">Try searching for different equipment</p>
+                </div>
+            `;
+        }
+    }
+
+    function resetSearch() {
+        currentSearchTerm = '';
+        searchInput.value = '';
+        searchSuggestions.style.display = 'none';
+        searchResultsInfo.style.display = 'none';
+        stationsGrid.innerHTML = '';
+        originalStations.forEach(station => {
+            stationsGrid.appendChild(station.element.cloneNode(true));
+        });
+        updateTotalQuantity();
+    }
+
+    function updateTotalQuantity(quantity) {
+        totalQuantityValue.textContent = quantity !== undefined ? quantity : '--';
+    }
             
             // Cancel search button event
             cancelSearchBtn.addEventListener('click', resetSearch);
@@ -877,5 +867,27 @@
             });
         }
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const badge = document.getElementById('itemsCountBadge');
+    const searchForm = document.querySelector('form[action="{{ route('stations.show', $station) }}"]');
+    const searchInput = searchForm.querySelector('input[name="search"]');
+
+    // Initial badge: total items
+    if (badge) {
+        badge.textContent = allItems.length;
+    }
+
+    // Update badge on form submit
+    searchForm.addEventListener('submit', function() {
+        const query = searchInput.value.toLowerCase();
+        const filteredItems = allItems.filter(item => item.name.toLowerCase().includes(query));
+
+        if (badge) {
+            badge.textContent = filteredItems.length;
+        }
+    });
+});
+</script>
 </body>
 </html>

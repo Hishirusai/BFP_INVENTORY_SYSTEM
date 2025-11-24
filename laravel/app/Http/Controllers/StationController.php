@@ -18,18 +18,17 @@ class StationController extends Controller
      * Display a listing of stations
      */
     public function index(): View
-    {
-        $stations = Station::where('is_active', true)->withCount('items')->get();
-        return view('stations.index', compact('stations'));
-    }
+{
+    $stations = Station::where('is_active', true)->get();
 
-    /**
-     * Show the form for creating a new station
-     */
-    public function create(): View
-    {
-        return view('stations.create');
-    }
+    // Add total quantity for each station
+    $stations->map(function($station) {
+        $station->total_quantity = $station->items()->sum('quantity_on_hand');
+        return $station;
+    });
+
+    return view('stations.index', compact('stations'));
+}
 
     /**
      * Store a newly created station
@@ -59,13 +58,11 @@ class StationController extends Controller
      */
     public function destroy(Station $station): RedirectResponse
     {
-        // Check if station has items
         if ($station->items()->count() > 0) {
             return redirect()->route('stations.index')
                 ->with('error', 'Cannot remove station. It still has items assigned. Please transfer or remove items first.');
         }
 
-        // Deactivate instead of deleting
         $station->is_active = false;
         $station->save();
 
@@ -81,81 +78,85 @@ class StationController extends Controller
 
         // Search functionality
         if ($request->has('search') && $request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('sku', 'like', '%' . $request->search . '%')
-                ->orWhere('description', 'like', '%' . $request->search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('sku', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
         }
 
-        // Filter by unit if provided
+        // Filter by unit
         if ($request->has('unit') && $request->unit) {
             $query->where('unit', $request->unit);
         }
 
-        // Paginate items (10 per page)
         $items = $query->latest()->paginate(10);
-        $itemsCount = $station->items()->count();
-        $lowStockItems = $station->items()->whereColumn('quantity_on_hand', '<=', 'reorder_level')->count();
-        $totalInventoryValue = $station->items()->sum('total_cost');
-        $unserviceableItems = $station->items()->where('condition', 'unserviceable')->count();
 
-        // Get all unique units for filter dropdown
+        // Counts based on filtered query
+        $itemsCount = $query->count();
+        $lowStockItems = $query->whereColumn('quantity_on_hand', '<=', 'reorder_level')->count();
+        $totalInventoryValue = $query->sum('total_cost');
+        $unserviceableItems = $query->where('condition', 'unserviceable')->count();
+
+        // Units for filter dropdown
         $units = $station->items()->select('unit')->distinct()->pluck('unit');
 
-        return view('stations.show', compact('station', 'items', 'itemsCount', 'lowStockItems', 'totalInventoryValue', 'unserviceableItems', 'units'));
+        return view('stations.show', compact(
+            'station', 'items', 'itemsCount', 'lowStockItems', 'totalInventoryValue', 'unserviceableItems', 'units'
+        ));
     }
 
     /**
      * Export station items to CSV
      */
     public function export(Station $station)
-{
-    $items = $station->items()->get();
-    $stationName = str_replace(' ', '_', $station->name);
+    {
+        $items = $station->items()->get();
+        $stationName = str_replace(' ', '_', $station->name);
 
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-    // Excel headers
-    $headers = ['No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Condition', 'Life Span (Years)', 'Date Acquired', 'Date Expiry'];
-    $sheet->fromArray($headers, null, 'A1');
-    $sheet->getStyle('A1:K1')->getFont()->setBold(true);
-    $sheet->getStyle('A1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $headers = ['No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Condition', 'Life Span (Years)', 'Date Acquired', 'Date Expiry'];
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    $row = 2;
-    $count = 1;
+        $row = 2;
+        $count = 1;
 
-    foreach ($items as $item) {
-        $dateAcquired = $item->date_acquired ? $item->date_acquired->format('Y-m-d') : 'N/A';
-        $dateExpiry = ($item->life_span_years && $item->date_acquired)
-            ? $item->date_acquired->copy()->addYears($item->life_span_years)->format('Y-m-d')
-            : 'N/A';
+        foreach ($items as $item) {
+            $dateAcquired = $item->date_acquired ? $item->date_acquired->format('Y-m-d') : 'N/A';
+            $dateExpiry = ($item->life_span_years && $item->date_acquired)
+                ? $item->date_acquired->copy()->addYears($item->life_span_years)->format('Y-m-d')
+                : 'N/A';
 
-        $sheet->setCellValue("A$row", $count)
-            ->setCellValue("B$row", $item->name)
-            ->setCellValue("C$row", $item->sku)
-            ->setCellValue("D$row", $item->unit)
-            ->setCellValue("E$row", $item->unit_cost)
-            ->setCellValue("F$row", $item->total_cost)
-            ->setCellValue("G$row", $item->quantity_on_hand)
-            ->setCellValue("H$row", $item->condition ?? 'serviceable')
-            ->setCellValue("I$row", $item->life_span_years ?? 'N/A')
-            ->setCellValue("J$row", $dateAcquired)
-            ->setCellValue("K$row", $dateExpiry);
+            $sheet->setCellValue("A$row", $count)
+                ->setCellValue("B$row", $item->name)
+                ->setCellValue("C$row", $item->sku)
+                ->setCellValue("D$row", $item->unit)
+                ->setCellValue("E$row", $item->unit_cost)
+                ->setCellValue("F$row", $item->total_cost)
+                ->setCellValue("G$row", $item->quantity_on_hand)
+                ->setCellValue("H$row", $item->condition ?? 'serviceable')
+                ->setCellValue("I$row", $item->life_span_years ?? 'N/A')
+                ->setCellValue("J$row", $dateAcquired)
+                ->setCellValue("K$row", $dateExpiry);
 
-        $row++;
-        $count++;
+            $row++;
+            $count++;
+        }
+
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+            $sheet->getStyle($col)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+        }
+
+        $filename = 'station_' . $stationName . '_inventory_' . date('Y-m-d_H-i-s') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $filename);
     }
-
-    foreach (range('A', 'K') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
-        $sheet->getStyle($col)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
-    }
-
-    $filename = 'station_' . $stationName . '_inventory_' . date('Y-m-d_H-i-s') . '.xlsx';
-    $writer = new Xlsx($spreadsheet);
-
-    return response()->streamDownload(function() use ($writer) {
-        $writer->save('php://output');
-    }, $filename);
-}
 }
