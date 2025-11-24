@@ -501,43 +501,70 @@
                 </table>
             </div>
 
-            @if($items->hasPages())
-            <div class="flex-shrink-0 p-1.5 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination rounded-b-2xl">
-
-                <div class="flex items-center justify-between gap-2 h-full">
-                    <div class="text-sm text-gray-800 font-bold whitespace-nowrap">
-                        <i class="fas fa-list mr-1 text-blue-600 text-sm"></i>Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
-                    </div>
-                    <div class="compact-pagination flex items-center space-x-1">
-                        @if ($items->onFirstPage())
-                        <span class="relative inline-flex items-center px-2 py-1 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
-                            &lt;
-                        </span>
-                        @else
-                        <a href="{{ $items->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-1 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
-                            &lt;
-                        </a>
-                        @endif
-                        
-                        <div class="px-1.5 py-0.5 text-sm font-bold text-gray-700">
-                            {{ $items->currentPage() }} of {{ $items->lastPage() }}
+            <div class="overflow-x-auto bg-white shadow-md rounded-xl">
+    <table class="w-full min-w-[600px]">
+        <thead class="sticky top-0 z-10">
+            <!-- your table headers -->
+        </thead>
+        <tbody>
+            @forelse($items as $index => $item)
+                <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
+                    <!-- your table rows -->
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="9" class="px-6 py-16 text-center bg-gradient-to-br from-gray-50 to-gray-100">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-box-open text-6xl text-gray-400 mb-4"></i>
+                            <p class="text-xl font-bold text-gray-600 mb-2">No items found</p>
+                            <p class="text-sm text-gray-500">Click "Add Item" to get started</p>
                         </div>
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
-                        @if ($items->hasMorePages())
-                        <a href="{{ $items->nextPageUrl() }}" class="relative -ml-px inline-flex items-center px-2 py-1 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
-                            &gt;
-                        </a>
-                        @else
-                        <span class="relative -ml-px inline-flex items-center px-2 py-1 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
-                            &gt;
-                        </span>
-                        @endif
-                    </div>
-                </div>
+    {{-- Pagination matching reports --}}
+    @if($items->hasPages())
+    <div class="flex-shrink-0 p-1.5 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination mt-2 mb-4 rounded-b-xl">
+        <div class="flex items-center justify-between gap-2 h-full">
+            <div class="text-sm text-gray-800 font-bold whitespace-nowrap">
+                <i class="fas fa-list mr-1 text-blue-600 text-sm"></i>
+                Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
             </div>
-            @endif
+            <div class="compact-pagination flex items-center space-x-1">
+                {{-- Previous Page --}}
+                @if ($items->onFirstPage())
+                    <span class="relative inline-flex items-center px-2.5 py-1.5 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
+                        &lt;
+                    </span>
+                @else
+                    <a href="{{ $items->previousPageUrl() }}" class="relative inline-flex items-center px-2.5 py-1.5 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
+                        &lt;
+                    </a>
+                @endif
+
+                {{-- Current Page --}}
+                <div class="px-2 py-1 text-sm font-bold text-gray-700">
+                    {{ $items->currentPage() }} of {{ $items->lastPage() }}
+                </div>
+
+                {{-- Next Page --}}
+                @if ($items->hasMorePages())
+                    <a href="{{ $items->nextPageUrl() }}" class="relative -ml-px inline-flex items-center px-2.5 py-1.5 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
+                        &gt;
+                    </a>
+                @else
+                    <span class="relative -ml-px inline-flex items-center px-2.5 py-1.5 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
+                        &gt;
+                    </span>
+                @endif
+            </div>
         </div>
     </div>
+@endif
+</div>
 
     <div id="itemDetailsModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity duration-300">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 border-2 border-gray-200 transform transition-all duration-300 scale-95" id="modalContent">

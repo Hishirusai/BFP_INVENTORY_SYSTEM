@@ -186,7 +186,9 @@
                     <div class="space-y-3">
                         <div class="grid grid-cols-3 gap-1">
                             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-1 border border-blue-400 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center group text-center">
-                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300">{{ $itemsCount }}</div>
+                                <div class="text-[20px] font-bold text-white group-hover:scale-110 transition-transform duration-300" id="itemsCountBadge">
+                                    {{ $itemsCount }}
+                                </div>
                                 <div class="text-[15px] text-blue-100 font-semibold uppercase tracking-wide flex items-center justify-center mt-1">
                                     <i class="fas fa-box mr-1"></i>Items
                                 </div>
@@ -350,17 +352,43 @@
             </div>
 
             @if($items->hasPages())
-            <div class="flex-shrink-0 p-1.5 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination mt-auto rounded-b-xl">
-                <div class="flex items-center justify-between gap-2 h-full">
-                    <div class="text-sm text-gray-800 font-bold whitespace-nowrap">
-                        <i class="fas fa-list mr-1 text-blue-600 text-sm"></i>Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
-                    </div>
-                    <div class="compact-pagination flex items-center space-x-1">
-                        {{ $items->links('pagination::simple-tailwind') }}
-                    </div>
-                </div>
+    <div class="flex-shrink-0 p-1.5 border-t border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 compact-pagination mt-auto rounded-b-xl">
+        <div class="flex items-center justify-between gap-2 h-full">
+            <div class="text-sm text-gray-800 font-bold whitespace-nowrap">
+                <i class="fas fa-list mr-1 text-blue-600 text-sm"></i>
+                Showing {{ $items->firstItem() }} to {{ $items->lastItem() }} of {{ $items->total() }} results
             </div>
-            @endif
+            <div class="compact-pagination flex items-center space-x-1">
+                {{-- Previous Page --}}
+                @if ($items->onFirstPage())
+                    <span class="relative inline-flex items-center px-2.5 py-1.5 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
+                        &lt;
+                    </span>
+                @else
+                    <a href="{{ $items->previousPageUrl() }}" class="relative inline-flex items-center px-2.5 py-1.5 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
+                        &lt;
+                    </a>
+                @endif
+
+                {{-- Current Page --}}
+                <div class="px-2 py-1 text-sm font-bold text-gray-700">
+                    {{ $items->currentPage() }} of {{ $items->lastPage() }}
+                </div>
+
+                {{-- Next Page --}}
+                @if ($items->hasMorePages())
+                    <a href="{{ $items->nextPageUrl() }}" class="relative -ml-px inline-flex items-center px-2.5 py-1.5 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-800 leading-4 rounded-md hover:from-blue-700 hover:to-blue-800 shadow hover:shadow-md transition duration-200">
+                        &gt;
+                    </a>
+                @else
+                    <span class="relative -ml-px inline-flex items-center px-2.5 py-1.5 text-base font-bold text-gray-500 bg-gray-300 border border-gray-400 cursor-default leading-4 rounded-md shadow">
+                        &gt;
+                    </span>
+                @endif
+            </div>
+        </div>
+    </div>
+@endif
         </div>
     </div>
 
@@ -532,6 +560,7 @@
             document.getElementById('sidebar').classList.add('translate-x-full');
             document.getElementById('sidebarOverlay').classList.add('hidden');
         });
+       
     </script>
 </body>
 </html>
