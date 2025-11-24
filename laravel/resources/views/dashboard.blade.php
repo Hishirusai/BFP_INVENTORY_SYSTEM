@@ -407,8 +407,10 @@
                     <tbody>
                         @forelse($items as $index => $item)
                         <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-colors duration-200 border-b border-gray-100">
-                            <td class="px-3 py-2 text-gray-900">
-                                <span class="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline font-bold text-sm item-details-link transition-colors duration-200" data-item-id="{{ $item->id }}">{{ $item->name }}</span>
+                            <td class="px-3 py-2 text-gray-900 max-w-[200px] truncate">
+                                <span class="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline font-bold text-sm item-details-link transition-colors duration-200" data-item-id="{{ $item->id }}">
+                                    {{ $item->name }}
+                                </span>
                             </td>
                             
                             <td class="px-3 py-2 text-[10px] text-gray-700 whitespace-nowrap">
@@ -471,16 +473,16 @@
     @endif
 </td>
                             
-                            <td class="px-3 py-2 text-[10px] whitespace-nowrap">
+                            <td class="px-3 py-2 text-[10px] whitespace-nowrap w-[140px]">
                                 <div class="flex space-x-1.5">
                                     <button class="edit-item-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-blue-600 hover:to-blue-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold" 
-        data-item-id="{{ $item->id }}">
-    <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
-</button>
+                                        data-item-id="{{ $item->id }}">
+                                        <i class="fas fa-edit mr-1 text-[8px]"></i>Edit
+                                    </button>
                                     <button type="button" onclick="openDeleteModal('{{ route('items.destroy', $item) }}')" 
-        class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
-    <i class="fas fa-trash mr-1 text-[8px]"></i>Delete
-</button>
+                                        class="bg-gradient-to-r from-red-500 to-rose-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] hover:from-red-600 hover:to-rose-700 inline-flex items-center shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 font-semibold">
+                                        <i class="fas fa-trash mr-1 text-[8px]"></i>Delete
+                                    </button>
                                 </div>
                             </td>
 

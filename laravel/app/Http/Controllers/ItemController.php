@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use App\Models\Supplier;
 use App\Models\Station;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +22,7 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Item::with('supplier');
+        $query = Item::query();
 
         // Search functionality
         if ($request->has('search') && $request->search) {
@@ -34,11 +33,10 @@ class ItemController extends Controller
 
         $items = $query->latest()->get();
 
-        // New changes nov23
-        $stations = \App\Models\Station::where('is_active', true)->get();
-        
+        $stations = Station::where('is_active', true)->get();
         $units = Item::select('unit')->distinct()->pluck('unit');
-        return view('items.edit-form', compact('item', 'suppliers', 'stations', 'units'));
+
+        return view('items.edit-form', compact('stations', 'units'));
     }
 
     /**
@@ -46,11 +44,11 @@ class ItemController extends Controller
      */
     public function create(Request $request)
     {
-        $suppliers = Supplier::all();
-        $stations = \App\Models\Station::where('is_active', true)->get();
+        $stations = Station::where('is_active', true)->get();
         $units = Item::select('unit')->distinct()->pluck('unit');
         $selectedStationId = $request->get('station_id');
-        return view('items.create', compact('suppliers', 'stations', 'units', 'selectedStationId'));
+
+        return view('items.create', compact('stations', 'units', 'selectedStationId'));
     }
 
     /**
@@ -62,7 +60,6 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:items,sku',
             'description' => 'nullable|string',
-            'supplier_id' => 'nullable|exists:suppliers,id',
             'station_id' => 'nullable|exists:stations,id',
             'unit' => 'required|string|max:50',
             'unit_cost' => 'nullable|numeric|min:0',
@@ -74,18 +71,9 @@ class ItemController extends Controller
             'date_acquired' => 'nullable|date',
         ]);
 
-        $item = Item::create($request->all());
+        Item::create($request->all());
 
         return redirect()->route('dashboard')->with('success', 'Item created successfully!');
-    }
-
-    /**
-     * Display the specified resource as JSON for API requests.
-     */
-    public function showJson(Item $item)
-    {
-        $item->load('supplier');
-        return response()->json($item);
     }
 
     /**
@@ -93,7 +81,6 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        $item->load('supplier');
         return view('items.show', compact('item'));
     }
 
@@ -102,10 +89,10 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        $suppliers = Supplier::all();
-        $stations = \App\Models\Station::where('is_active', true)->get();
+        $stations = Station::where('is_active', true)->get();
         $units = Item::select('unit')->distinct()->pluck('unit');
-        return view('items.edit', compact('item', 'suppliers', 'stations', 'units'));
+
+        return view('items.edit', compact('item', 'stations', 'units'));
     }
 
     /**
@@ -117,7 +104,6 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:items,sku,' . $item->id,
             'description' => 'nullable|string',
-            'supplier_id' => 'nullable|exists:suppliers,id',
             'station_id' => 'nullable|exists:stations,id',
             'unit' => 'required|string|max:50',
             'unit_cost' => 'nullable|numeric|min:0',
@@ -131,17 +117,14 @@ class ItemController extends Controller
 
         $item->update($request->all());
 
-        // If user clicked the Apply button, save and stay on the edit page
         if ($request->has('apply')) {
             return redirect()->route('items.edit', $item)->with('success', 'Item updated successfully!');
         }
 
-        // If the request came with a 'redirect_to' parameter (like from the Station view), go there.
         if ($request->has('redirect_to') && $request->redirect_to) {
             return redirect($request->redirect_to)->with('success', 'Item updated successfully!');
         }
 
-        // Default fallback to main dashboard
         return redirect()->route('dashboard')->with('success', 'Item updated successfully!');
     }
 
@@ -156,91 +139,93 @@ class ItemController extends Controller
     }
 
     /**
-     * Export items to CSV
+     * Export items to XLSX file.
      */
-
     public function export(Request $request)
-{
-    $stationId = $request->get('station_id');
+    {
+        $stationId = $request->get('station_id');
 
-    if ($stationId) {
-        $items = Item::where('station_id', $stationId)->get();
-        $stationName = Station::find($stationId)?->name ?? 'station';
-    } else {
-        $items = Item::whereNull('station_id')->get();
-        $stationName = 'main_dashboard';
+        if ($stationId) {
+            $items = Item::where('station_id', $stationId)->get();
+            $stationName = Station::find($stationId)?->name ?? 'station';
+        } else {
+            $items = Item::whereNull('station_id')->get();
+            $stationName = 'main_dashboard';
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headers = [
+            'No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost',
+            'Quantity', 'Condition', 'Date Acquired (YYYY-MM-DD)', 'Date Expiry (YYYY-MM-DD)'
+        ];
+        $sheet->fromArray($headers, null, 'A1');
+
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:J1')->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $row = 2;
+        $count = 1;
+
+        foreach ($items as $item) {
+            $dateAcquired = $item->date_acquired ? Carbon::parse($item->date_acquired)->format('Y-m-d') : 'N/A';
+            $dateExpiry = ($item->life_span_years && $item->date_acquired)
+                ? Carbon::parse($item->date_acquired)->addYears($item->life_span_years)->format('Y-m-d')
+                : 'N/A';
+
+            $sheet->setCellValue("A$row", $count)
+                ->setCellValue("B$row", $item->name)
+                ->setCellValue("C$row", $item->sku)
+                ->setCellValue("D$row", $item->unit)
+                ->setCellValue("E$row", $item->unit_cost)
+                ->setCellValue("F$row", $item->total_cost)
+                ->setCellValue("G$row", $item->quantity_on_hand ?? 0)
+                ->setCellValue("H$row", $item->condition ?? 'N/A')
+                ->setCellValue("I$row", $dateAcquired)
+                ->setCellValue("J$row", $dateExpiry);
+
+            $sheet->getStyle("E$row:F$row")->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+            $sheet->getStyle("A$row")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("B$row:C$row")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle("D$row")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("E$row:F$row")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("G$row:J$row")->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+            $row++;
+            $count++;
+        }
+
+        foreach (range('A', 'J') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+            $sheet->getStyle($col)->getAlignment()
+                ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
+        }
+
+        $filename = 'inventory_' . str_replace(' ', '_', $stationName) . '_' . date('Y-m-d_h-i-s_A') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $filename);
     }
 
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+    /**
+     * Show the form for editing the specified resource as a partial for modal.
+     */
+    public function editForm(Item $item)
+    {
+        $stations = Station::where('is_active', true)->get();
+        $units = Item::select('unit')->distinct()->pluck('unit');
 
-    $headers = ['No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Condition', 'Date Acquired (YYYY-MM-DD)', 'Date Expiry (YYYY-MM-DD)'];
-    $sheet->fromArray($headers, null, 'A1');
-
-    // Header style: bold and centered
-    $sheet->getStyle('A1:J1')->getFont()->setBold(true);
-    $sheet->getStyle('A1:J1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-    $row = 2;
-    $count = 1;
-
-    foreach ($items as $item) {
-        $dateAcquired = $item->date_acquired ? Carbon::parse($item->date_acquired)->format('Y-m-d') : 'N/A';
-        $dateExpiry = ($item->life_span_years && $item->date_acquired)
-            ? Carbon::parse($item->date_acquired)->addYears($item->life_span_years)->format('Y-m-d')
-            : 'N/A';
-
-        $sheet->setCellValue("A$row", $count)
-            ->setCellValue("B$row", $item->name)
-            ->setCellValue("C$row", $item->sku)
-            ->setCellValue("D$row", $item->unit)
-            ->setCellValue("E$row", $item->unit_cost)
-            ->setCellValue("F$row", $item->total_cost)
-            ->setCellValue("G$row", $item->quantity_on_hand ?? 0)
-            ->setCellValue("H$row", $item->condition ?? 'N/A')
-            ->setCellValue("I$row", $dateAcquired)
-            ->setCellValue("J$row", $dateExpiry);
-
-        // Number formatting for costs
-        $sheet->getStyle("E$row:F$row")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
-        // Alignment per column
-        $sheet->getStyle("A$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // No.
-        $sheet->getStyle("B$row:C$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT); // Name & SKU
-        $sheet->getStyle("D$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Unit
-        $sheet->getStyle("E$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Costs
-        $sheet->getStyle("G$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Quantity
-        $sheet->getStyle("H$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Condition
-        $sheet->getStyle("I$row:J$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Dates
-
-        $row++;
-        $count++;
-    }
-
-    // Auto size columns and vertical alignment
-    foreach (range('A', 'J') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
-        $sheet->getStyle($col)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
-    }
-
-    $filename = 'inventory_' . str_replace(' ', '_', $stationName) . '_' . date('Y-m-d_h-i-s_A') . '.xlsx';
-    $writer = new Xlsx($spreadsheet);
-
-    return response()->streamDownload(function() use ($writer) {
-        $writer->save('php://output');
-    }, $filename);
-}
-
-
-    
-        /**
- * Show the form for editing the specified resource as a partial for modal.
- */
-public function editForm(Item $item)
-{
-    $suppliers = Supplier::all();
-    $stations = \App\Models\Station::where('is_active', true)->get();
-    $units = Item::select('unit')->distinct()->pluck('unit');
-    return view('items.edit-form', compact('item', 'suppliers', 'stations', 'units'));
+        return view('items.edit-form', compact('item', 'stations', 'units'));
     }
 }

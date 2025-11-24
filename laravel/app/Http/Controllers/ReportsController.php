@@ -14,58 +14,89 @@ class ReportsController extends Controller
      * Display a listing of reports
      */
     public function index(Request $request): View
-    {
-        $query = Report::with(['item', 'user']);
+{
+    $query = Report::with(['item', 'user']);
 
-        // Filter by type if provided
-        if ($request->has('type') && $request->type) {
-            $query->where('type', $request->type);
-        }
-
-        // Filter by item if provided
-        if ($request->has('item_id') && $request->item_id) {
-            $query->where('item_id', $request->item_id);
-        }
-
-        $reports = $query->latest()->paginate(15);
-        $items = Item::all();
-
-        return view('reports.index', compact('reports', 'items'));
+    // Filter by type if provided
+    if ($request->has('type') && $request->type) {
+        $query->where('type', $request->type);
     }
+
+    // Filter by item if provided
+    if ($request->has('item_id') && $request->item_id) {
+        $query->where('item_id', $request->item_id);
+    }
+
+    // Get reports in descending order (latest first)
+    $reportsCollection = $query->latest()->get();
+
+    // Track running quantities per item to calculate prev_quantity
+    $runningQuantities = [];
+    $reportsCollection->each(function ($report) use (&$runningQuantities) {
+        $itemId = $report->item_id;
+
+        if (!isset($runningQuantities[$itemId])) {
+            // Start from current quantity_on_hand
+            $runningQuantities[$itemId] = $report->item->quantity_on_hand ?? 0;
+        }
+
+        if ($report->type === 'addition') {
+            $report->prev_quantity = $runningQuantities[$itemId] - $report->quantity_change;
+            $runningQuantities[$itemId] -= $report->quantity_change;
+        } elseif ($report->type === 'decrease') {
+            $report->prev_quantity = $runningQuantities[$itemId] + $report->quantity_change;
+            $runningQuantities[$itemId] += $report->quantity_change;
+        } else {
+            $report->prev_quantity = null;
+        }
+    });
+
+    // Paginate manually after prev_quantity calculation
+    $perPage = 15;
+    $currentPage = request()->get('page', 1);
+    $reports = new \Illuminate\Pagination\LengthAwarePaginator(
+        $reportsCollection->forPage($currentPage, $perPage),
+        $reportsCollection->count(),
+        $perPage,
+        $currentPage,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );
+
+    $items = Item::all();
+    return view('reports.index', compact('reports', 'items'));
+}
 
     /**
      * Store a newly created report
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'type' => 'required|in:addition,decrease,transfer',
-            'item_id' => 'required|exists:items,id',
-            'quantity_change' => 'required|integer',
-            'reason' => 'nullable|string|max:255',
-        ]);
+    public function store(Request $request) { 
+    $request->validate([ 
+        'name' => 'required|string|max:255', 
+        'quantity_on_hand' => 'required|integer|min:0', 
+        'unit_cost' => 'required|numeric|min:0', 
+        // other validations 
+    ]); 
 
-        $item = Item::findOrFail($request->item_id);
+    // 1. Create the item 
+    $item = Item::create([ 
+        'name' => $request->name, 
+        'quantity_on_hand' => $request->quantity_on_hand, 
+        'unit_cost' => $request->unit_cost, 
+        // other fields 
+    ]); 
 
-        // Calculate cost change
-        $costChange = $request->quantity_change * $item->unit_cost;
+    // 2. Create a report for the new item 
+    Report::create([ 
+        'type' => 'created', // mark as created 
+        'item_id' => $item->id, 
+        'user_id' => auth()->id(), 
+        'quantity_change' => $item->quantity_on_hand, // initial quantity 
+        'cost_change' => $item->quantity_on_hand * $item->unit_cost, // initial cost 
+        'reason' => 'New item created', 
+    ]); 
 
-        // Adjust for decrease (negative values)
-        if ($request->type === 'decrease') {
-            $costChange = -$costChange;
-        }
-
-        Report::create([
-            'type' => $request->type,
-            'item_id' => $item->id,
-            'user_id' => auth()->id(),
-            'quantity_change' => $request->quantity_change,
-            'cost_change' => $costChange,
-            'reason' => $request->reason,
-        ]);
-
-        return redirect()->back()->with('success', 'Report created successfully!');
-    }
+    return redirect()->back()->with('success', 'Item created successfully!'); 
+}
 
     /**
      * Display the specified report
