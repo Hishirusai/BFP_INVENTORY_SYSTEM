@@ -161,6 +161,7 @@
         </div>
     </div>
 
+    
     <div id="sidebar" class="fixed inset-y-0 right-0 w-64 bg-gradient-to-b from-gray-800 to-gray-900 text-white transform translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl border-l border-gray-700">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-700">
@@ -173,8 +174,14 @@
                 <a href="{{ route('dashboard') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
                     <i class="fas fa-home mr-3"></i>Dashboard
                 </a>
+                <a href="{{ route('admin.users') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="{{ route('stations.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
+                    <i class="fas fa-users mr-3"></i>Stations
+                </a>
                 <a href="{{ route('reports.index') }}" class="block px-4 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-purple-600 hover:to-indigo-700 hover:text-white rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105 font-semibold">
-                    <i class="fas fa-chart-bar mr-3"></i>Full Reports
+                    <i class="fas fa-users mr-3"></i>Full Reports
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="block">
                     @csrf

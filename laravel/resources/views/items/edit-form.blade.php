@@ -183,15 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
     calculateEditTotalCost();
 });
 
-function calculateEditTotalCost() {
-    const quantity = parseFloat(document.getElementById('quantity_on_hand')?.value) || 0;
-    const unitCost = parseFloat(document.getElementById('unit_cost')?.value) || 0;
-    const totalCostInput = document.getElementById('total_cost');
-    
-    if (totalCostInput) {
-        totalCostInput.value = (quantity * unitCost).toFixed(2);
-    }
-}
+function calculateTotalCost() {
+            const quantity = parseFloat(document.getElementById('quantity_on_hand').value) || 0;
+            const unitCost = parseFloat(document.getElementById('unit_cost').value) || 0;
+            const totalCost = quantity * unitCost;
+
+            document.getElementById('total_cost').value = totalCost.toFixed(2);
+        }
 
  // Compute life_span_years from date_acquired and date_expiry before submit
         function computeLifeSpanYearsForForm() {
