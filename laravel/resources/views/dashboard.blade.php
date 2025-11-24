@@ -349,14 +349,23 @@
                                     value="{{ request('search') }}"
                                     class="flex-1 border-2 border-gray-300 rounded-l-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs transition-all duration-200 shadow-sm">
                                 <select name="unit" class="border-2 border-gray-300 px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs transition-all duration-200 shadow-sm bg-white">
-                                    <option value="">All Units</option>
-                                    @foreach($units as $unit)
-                                    <option value="{{ $unit }}" {{ request('unit') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
-                                    @endforeach
-                                    @unless($units->contains('box'))
-                                    <option value="box" {{ request('unit') == 'box' ? 'selected' : '' }}>box</option>
-                                    @endunless
-                                </select>
+    <option value="">All Units</option>
+    @foreach($units as $unit)
+    <option value="{{ $unit }}" {{ request('unit') == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+    @endforeach
+    
+    @unless($units->contains('box'))
+    <option value="box" {{ request('unit') == 'box' ? 'selected' : '' }}>box</option>
+    @endunless
+
+    @unless($units->contains('pair'))
+    <option value="pair" {{ request('unit') == 'pair' ? 'selected' : '' }}>pair</option>
+    @endunless
+
+    @unless($units->contains('roll'))
+    <option value="roll" {{ request('unit') == 'roll' ? 'selected' : '' }}>roll</option>
+    @endunless
+</select>
                                 <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2.5 py-1.5 rounded-r-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -888,23 +897,36 @@
                 </div>
 
                 <!-- Unit -->
-                <div>
-                    <label for="unit" class="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
-                    <select name="unit" id="unit" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                        <option value="">Select unit</option>
-                        @foreach($units as $unit)
-                        <option value="{{ $unit }}" {{ old('unit') == $unit ? 'selected' : '' }}>{{ ucfirst($unit) }}</option>
-                        @endforeach
-                        @unless($units->contains('box'))
-                        <option value="box" {{ old('unit') == 'box' ? 'selected' : '' }}>Box</option>
-                        @endunless
-                    </select>
-                    @error('unit')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+               <div>
+    <label for="unit" class="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
+    <select name="unit" id="unit" required
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+        <option value="">Select unit</option>
+        
+        {{-- 1. Load dynamic units from the controller/database --}}
+        @foreach($units as $unit)
+        <option value="{{ $unit }}" {{ old('unit') == $unit ? 'selected' : '' }}>{{ ucfirst($unit) }}</option>
+        @endforeach
 
+        {{-- 2. Add Box if not already in list --}}
+        @unless($units->contains('box'))
+        <option value="box" {{ old('unit') == 'box' ? 'selected' : '' }}>Box</option>
+        @endunless
+
+        {{-- 3. Add Pair if not already in list --}}
+        @unless($units->contains('pair'))
+        <option value="pair" {{ old('unit') == 'pair' ? 'selected' : '' }}>Pair</option>
+        @endunless
+
+        {{-- 4. Add Roll if not already in list --}}
+        @unless($units->contains('roll'))
+        <option value="roll" {{ old('unit') == 'roll' ? 'selected' : '' }}>Roll</option>
+        @endunless
+    </select>
+    @error('unit')
+    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+</div>
                 <!-- Pricing -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
