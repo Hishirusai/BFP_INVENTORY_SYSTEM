@@ -4,9 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Supplier;
+use App\Models\Station;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Style\Font;
 
 class ItemController extends Controller
 {
@@ -150,46 +158,80 @@ class ItemController extends Controller
     /**
      * Export items to CSV
      */
-    public function export()
-    {
-        $items = Item::with('supplier')->get();
 
-        $filename = 'bfp_inventory_' . date('Y-m-d_H-i-s') . '.csv';
+    public function export(Request $request)
+{
+    $stationId = $request->get('station_id');
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () use ($items) {
-            $file = fopen('php://output', 'w');
-
-            // CSV headers
-            fputcsv($file, ['ID', 'Name', 'SKU', 'Description', 'Supplier', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Reorder Level', 'Status', 'Date Acquired']);
-
-            // CSV data
-            foreach ($items as $item) {
-                fputcsv($file, [
-                    $item->id,
-                    $item->name,
-                    $item->sku,
-                    $item->description,
-                    $item->supplier ? $item->supplier->name : 'N/A',
-                    $item->unit,
-                    $item->unit_cost,
-                    $item->total_cost,
-                    $item->quantity_on_hand,
-                    $item->reorder_level,
-                    $item->status,
-                    $item->date_acquired ? $item->date_acquired->format('Y-m-d') : 'N/A'
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+    if ($stationId) {
+        $items = Item::where('station_id', $stationId)->get();
+        $stationName = Station::find($stationId)?->name ?? 'station';
+    } else {
+        $items = Item::whereNull('station_id')->get();
+        $stationName = 'main_dashboard';
     }
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $headers = ['No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Condition', 'Date Acquired (YYYY-MM-DD)', 'Date Expiry (YYYY-MM-DD)'];
+    $sheet->fromArray($headers, null, 'A1');
+
+    // Header style: bold and centered
+    $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+    $sheet->getStyle('A1:J1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+    $row = 2;
+    $count = 1;
+
+    foreach ($items as $item) {
+        $dateAcquired = $item->date_acquired ? Carbon::parse($item->date_acquired)->format('Y-m-d') : 'N/A';
+        $dateExpiry = ($item->life_span_years && $item->date_acquired)
+            ? Carbon::parse($item->date_acquired)->addYears($item->life_span_years)->format('Y-m-d')
+            : 'N/A';
+
+        $sheet->setCellValue("A$row", $count)
+            ->setCellValue("B$row", $item->name)
+            ->setCellValue("C$row", $item->sku)
+            ->setCellValue("D$row", $item->unit)
+            ->setCellValue("E$row", $item->unit_cost)
+            ->setCellValue("F$row", $item->total_cost)
+            ->setCellValue("G$row", $item->quantity_on_hand ?? 0)
+            ->setCellValue("H$row", $item->condition ?? 'N/A')
+            ->setCellValue("I$row", $dateAcquired)
+            ->setCellValue("J$row", $dateExpiry);
+
+        // Number formatting for costs
+        $sheet->getStyle("E$row:F$row")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        // Alignment per column
+        $sheet->getStyle("A$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // No.
+        $sheet->getStyle("B$row:C$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT); // Name & SKU
+        $sheet->getStyle("D$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Unit
+        $sheet->getStyle("E$row:F$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Costs
+        $sheet->getStyle("G$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Quantity
+        $sheet->getStyle("H$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Condition
+        $sheet->getStyle("I$row:J$row")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // Dates
+
+        $row++;
+        $count++;
+    }
+
+    // Auto size columns and vertical alignment
+    foreach (range('A', 'J') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+        $sheet->getStyle($col)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
+    }
+
+    $filename = 'inventory_' . str_replace(' ', '_', $stationName) . '_' . date('Y-m-d_h-i-s_A') . '.xlsx';
+    $writer = new Xlsx($spreadsheet);
+
+    return response()->streamDownload(function() use ($writer) {
+        $writer->save('php://output');
+    }, $filename);
+}
+
+
     
         /**
  * Show the form for editing the specified resource as a partial for modal.

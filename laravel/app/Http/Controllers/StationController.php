@@ -8,6 +8,9 @@ use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class StationController extends Controller
 {
@@ -105,45 +108,54 @@ class StationController extends Controller
      * Export station items to CSV
      */
     public function export(Station $station)
-    {
-        $items = $station->items()->with('supplier')->get();
+{
+    $items = $station->items()->get();
+    $stationName = str_replace(' ', '_', $station->name);
 
-        $filename = 'station_' . str_replace(' ', '_', $station->name) . '_inventory_' . date('Y-m-d_H-i-s') . '.csv';
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+    // Excel headers
+    $headers = ['No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Condition', 'Life Span (Years)', 'Date Acquired', 'Date Expiry'];
+    $sheet->fromArray($headers, null, 'A1');
+    $sheet->getStyle('A1:K1')->getFont()->setBold(true);
+    $sheet->getStyle('A1:K1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $callback = function () use ($items) {
-            $file = fopen('php://output', 'w');
+    $row = 2;
+    $count = 1;
 
-            // CSV headers
-            fputcsv($file, ['ID', 'Name', 'SKU', 'Description', 'Supplier', 'Unit', 'Unit Cost', 'Total Cost', 'Quantity', 'Reorder Level', 'Status', 'Condition', 'Life Span (Years)', 'Date Acquired']);
+    foreach ($items as $item) {
+        $dateAcquired = $item->date_acquired ? $item->date_acquired->format('Y-m-d') : 'N/A';
+        $dateExpiry = ($item->life_span_years && $item->date_acquired)
+            ? $item->date_acquired->copy()->addYears($item->life_span_years)->format('Y-m-d')
+            : 'N/A';
 
-            // CSV data
-            foreach ($items as $item) {
-                fputcsv($file, [
-                    $item->id,
-                    $item->name,
-                    $item->sku,
-                    $item->description,
-                    $item->supplier ? $item->supplier->name : 'N/A',
-                    $item->unit,
-                    $item->unit_cost,
-                    $item->total_cost,
-                    $item->quantity_on_hand,
-                    $item->reorder_level,
-                    $item->status,
-                    $item->condition ?? 'serviceable',
-                    $item->life_span_years ?? 'N/A',
-                    $item->date_acquired ? $item->date_acquired->format('Y-m-d') : 'N/A'
-                ]);
-            }
+        $sheet->setCellValue("A$row", $count)
+            ->setCellValue("B$row", $item->name)
+            ->setCellValue("C$row", $item->sku)
+            ->setCellValue("D$row", $item->unit)
+            ->setCellValue("E$row", $item->unit_cost)
+            ->setCellValue("F$row", $item->total_cost)
+            ->setCellValue("G$row", $item->quantity_on_hand)
+            ->setCellValue("H$row", $item->condition ?? 'serviceable')
+            ->setCellValue("I$row", $item->life_span_years ?? 'N/A')
+            ->setCellValue("J$row", $dateAcquired)
+            ->setCellValue("K$row", $dateExpiry);
 
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        $row++;
+        $count++;
     }
+
+    foreach (range('A', 'K') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+        $sheet->getStyle($col)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+    }
+
+    $filename = 'station_' . $stationName . '_inventory_' . date('Y-m-d_H-i-s') . '.xlsx';
+    $writer = new Xlsx($spreadsheet);
+
+    return response()->streamDownload(function() use ($writer) {
+        $writer->save('php://output');
+    }, $filename);
+}
 }

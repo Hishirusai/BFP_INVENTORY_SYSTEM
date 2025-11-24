@@ -228,7 +228,7 @@
                             <a href="{{ route('stations.show', $station) }}" class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-2.5 py-1.5 rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl font-semibold text-xs">
                                 <i class="fas fa-times mr-1.5"></i>Clear
                             </a>
-                            <a href="{{ route('stations.export', $station) }}" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-2.5 py-1.5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
+                            <a href="{{ route('items.export', ['station_id' => $station->id]) }}" class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-2.5 py-1.5 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-xs">
                                 <i class="fas fa-download mr-1.5"></i>Export
                             </a>
                         </div>
