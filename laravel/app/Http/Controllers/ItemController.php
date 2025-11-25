@@ -248,7 +248,7 @@ class ItemController extends Controller
         // ----------------------------
         $headers = [
             'No.', 'Name', 'Reference No.', 'Quantity', 'Unit', 'Unit Cost', 'Total Cost',
-            'Condition', 'Date Acquired (YYYY-MM-DD)', 'Date Expiry (YYYY-MM-DD)'
+            'Condition', 'Date Acquired (Y-M-D)', 'Date Expiry (Y-M-D)'
         ];
         $sheet->fromArray($headers, null, 'A1');
 
@@ -355,8 +355,8 @@ class ItemController extends Controller
         $sheet->getColumnDimension('G')->setWidth($maxG + 5);
 
         // Date columns width based on header only
-        $sheet->getColumnDimension('I')->setWidth(strlen($sheet->getCell('I1')->getValue()) + 5);
-        $sheet->getColumnDimension('J')->setWidth(strlen($sheet->getCell('J1')->getValue()) + 5);
+        $sheet->getColumnDimension('I')->setWidth(strlen($sheet->getCell('I1')->getValue()) + 10);
+        $sheet->getColumnDimension('J')->setWidth(strlen($sheet->getCell('J1')->getValue()) + 8);
 
         // Header font bigger and bold
         $sheet->getStyle('A1:J1')->getFont()->setSize(14)->setBold(true);
