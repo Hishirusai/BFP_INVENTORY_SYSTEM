@@ -95,7 +95,7 @@ class StationController extends Controller
         // Counts based on filtered query
         $itemsCount = $query->count();
         $lowStockItems = $query->whereColumn('quantity_on_hand', '<=', 'reorder_level')->count();
-        $totalInventoryValue = $query->sum('total_cost');
+        $totalInventoryValue = $station->items()->sum('total_cost');
         $unserviceableItems = $query->where('condition', 'unserviceable')->count();
 
         // Units for filter dropdown
