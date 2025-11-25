@@ -207,8 +207,8 @@ public function showJson(Item $item)
     // Set header row values
     // ----------------------------
     $headers = [
-        'No.', 'Name', 'Reference No.', 'Unit', 'Unit Cost', 'Total Cost',
-        'Quantity', 'Condition', 'Date Acquired (YYYY-MM-DD)', 'Date Expiry (YYYY-MM-DD)'
+        'No.', 'Name', 'Reference No.', 'Quantity', 'Unit', 'Unit Cost', 'Total Cost',
+        'Condition', 'Date Acquired (YYYY-MM-DD)', 'Date Expiry (YYYY-MM-DD)'
     ];
     $sheet->fromArray($headers, null, 'A1');
 
@@ -239,28 +239,28 @@ public function showJson(Item $item)
         $sheet->setCellValue("A$row", $count)
             ->setCellValue("B$row", $item->name)
             ->setCellValue("C$row", $item->sku)
-            ->setCellValue("D$row", $item->unit)
-            ->setCellValue("E$row", $item->unit_cost)
-            ->setCellValue("F$row", $item->total_cost)
-            ->setCellValue("G$row", $item->quantity_on_hand ?? 0)
+            ->setCellValue("D$row", $item->quantity_on_hand ?? 0) // moved Quantity here
+            ->setCellValue("E$row", $item->unit)
+            ->setCellValue("F$row", $item->unit_cost)
+            ->setCellValue("G$row", $item->total_cost)
             ->setCellValue("H$row", $item->condition ?? 'N/A')
             ->setCellValue("I$row", $dateAcquired)
             ->setCellValue("J$row", $dateExpiry);
 
         // Format currency columns
-        $sheet->getStyle("E$row:F$row")->getNumberFormat()
-            ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+        $sheet->getStyle("F$row:G$row")->getNumberFormat()
+        ->setFormatCode('"₱"#,##0.00'); // PHP Peso format
 
         // Alignment for each cell
         $sheet->getStyle("A$row")->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle("B$row:C$row")->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-        $sheet->getStyle("D$row")->getAlignment()
+        $sheet->getStyle("D$row:E$row")->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle("E$row:F$row")->getAlignment()
+        $sheet->getStyle("F$row:G$row")->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle("G$row:J$row")->getAlignment()
+        $sheet->getStyle("H$row:J$row")->getAlignment()
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
         $row++;
@@ -274,21 +274,20 @@ public function showJson(Item $item)
     // ----------------------------
     // Fixed width columns
     // ----------------------------
-    $sheet->getColumnDimension('D')->setWidth(10);  // Unit
-    $sheet->getColumnDimension('E')->setWidth(15);  // Unit Cost
-    $sheet->getColumnDimension('G')->setWidth(12);  // Quantity
+    $sheet->getColumnDimension('E')->setWidth(10);  // Unit
+    $sheet->getColumnDimension('F')->setWidth(15);  // Unit Cost
     $sheet->getColumnDimension('H')->setWidth(15);  // Condition
 
-    $maxC = 0;
+    // ----------------------------
+    // Autofit columns based on content
+    // ----------------------------
+    $maxA = strlen('No.'); // start with header length
     foreach ($sheet->getRowIterator() as $r) {
-        $len = strlen($sheet->getCell('C' . $r->getRowIndex())->getValue());
-        if ($len > $maxC) $maxC = $len;
+        $len = strlen($sheet->getCell('A' . $r->getRowIndex())->getValue());
+        if ($len > $maxA) $maxA = $len;
     }
-    $sheet->getColumnDimension('A')->setWidth($maxC);
+    $sheet->getColumnDimension('A')->setWidth($maxA + 2);
 
-    // ----------------------------
-    // Autofit Name (B) based on content
-    // ----------------------------
     $maxB = 0;
     foreach ($sheet->getRowIterator() as $r) {
         $len = strlen($sheet->getCell('B' . $r->getRowIndex())->getValue());
@@ -296,9 +295,6 @@ public function showJson(Item $item)
     }
     $sheet->getColumnDimension('B')->setWidth($maxB + 5);
 
-    // ----------------------------
-    // Autofit Reference No. (C) based on content
-    // ----------------------------
     $maxC = 0;
     foreach ($sheet->getRowIterator() as $r) {
         $len = strlen($sheet->getCell('C' . $r->getRowIndex())->getValue());
@@ -308,15 +304,24 @@ public function showJson(Item $item)
 
     $maxC = 0;
     foreach ($sheet->getRowIterator() as $r) {
-        $len = strlen($sheet->getCell('C' . $r->getRowIndex())->getValue());
+        $len = strlen($sheet->getCell('D' . $r->getRowIndex())->getValue());
         if ($len > $maxC) $maxC = $len;
     }
-    $sheet->getColumnDimension('F')->setWidth($maxC + 5);
+    $sheet->getColumnDimension('D')->setWidth($maxC + 5);
+
+    $maxF = 0;
+    foreach ($sheet->getRowIterator() as $r) {
+        $len = strlen($sheet->getCell('G' . $r->getRowIndex())->getValue());
+        if ($len > $maxF) $maxF = $len;
+    }
+    $sheet->getColumnDimension('G')->setWidth($maxF + 5);
 
     // ----------------------------
     // Date columns width based on header only
+    // ----------------------------
     $sheet->getColumnDimension('I')->setWidth(strlen($sheet->getCell('I1')->getValue()) + 10);
     $sheet->getColumnDimension('J')->setWidth(strlen($sheet->getCell('J1')->getValue()) + 8);
+
     // ----------------------------
     // Header font bigger and bold
     // ----------------------------
@@ -330,13 +335,9 @@ public function showJson(Item $item)
     // ----------------------------
     // Row height for top/bottom spacing
     // ----------------------------
-    $fixedRowHeight = 30; 
-
+    $fixedRowHeight = 30;
     for ($r = 1; $r < $row; $r++) {
-        // Set fixed row height
         $sheet->getRowDimension($r)->setRowHeight($fixedRowHeight);
-
-        // Center vertically and wrap text
         $sheet->getStyle("A$r:J$r")->getAlignment()
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
             ->setWrapText(true);
