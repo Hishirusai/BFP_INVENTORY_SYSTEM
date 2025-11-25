@@ -207,6 +207,25 @@
             font-size: 10px;
             font-weight: 600;
             margin-left: 5px;
+            max-width: 120px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: inline-block; 
+        }
+
+        
+        .station-item-count {
+            display: none;
+            background: #2563eb;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px; 
+            font-weight: bold;
+            font-size: 11px;
+            white-space: nowrap;
+            margin-left: auto;
+            align-self: flex-start; 
         }
 
         .total-quantity-box {
@@ -459,7 +478,7 @@
                         <h2 class="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
                             <i class="fas fa-building mr-3 text-blue-600"></i>STATIONS
                         </h2>
-                        <p class="text-sm text-gray-600 mt-1">Click on a station to view its inventory | Click on "Clear Search" to see all stations</p>
+                        <p class="text-sm text-gray-600 mt-1">Click on a station to view its inventory | Click on "Clear Search" to see stations list</p>
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -488,7 +507,7 @@
                 <div class="total-quantity-box">
                     <div class="total-quantity-value" id="totalQuantityValue">--</div>
                     <div class="total-quantity-label">
-                        <i class="fas fa-boxes mr-2"></i>Total Equipment Quantity
+                        <i class="fas fa-boxes mr-2"></i>Total Equipment Quantity across All Station(s)
                     </div>
                 </div>
                 
@@ -528,11 +547,11 @@
                                 </div>
                                 <div class="flex-1 grid grid-cols-1 gap-2">
                                     <div class="flex justify-between items-start">
-                                        <h3 class="text-base font-bold text-gray-800">{{ $station->name }}</h3>
-                                        <span class="bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap station-item-count">
-                                            {{ $station->items_count }} items
-                                        </span>
-                                    </div>
+    <h3 class="text-base font-bold text-gray-800">{{ $station->name }}</h3>
+    <span class="station-item-count">
+    
+    </span>
+</div>
                                     <div class="text-xs text-gray-600">
                                         <p class="mb-1.5">
                                             <i class="fas fa-code mr-1.5"></i>Code: {{ $station->code }}
@@ -799,21 +818,22 @@
                 // Clone the station card
                 const cardClone = station.element.cloneNode(true);
 
-                // Update the station's item count to show equipment quantity
-                const countBadge = cardClone.querySelector('.station-item-count');
-                if (countBadge) {
-                    let itemQuantitiesHTML = '';
-                    matchingItems.forEach(item => {
-                        itemQuantitiesHTML += `
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-gray-800 font-semibold text-sm">${item.name}</span>
-                                <span class="text-white font-semibold text-sm ml-2">${item.quantity_on_hand} ${item.unit}</span>
-                            </div>
-                        `;
-                    });
-                    countBadge.innerHTML = itemQuantitiesHTML;
-                }
-
+                
+// Update the station's item count to show equipment quantity
+const countBadge = cardClone.querySelector('.station-item-count');
+if (countBadge && matchingItems.length > 0) {
+    // Show the badge (it's hidden by default)
+    countBadge.style.display = 'block';
+    
+    // Calculate total quantity for this station's matching items
+    let stationTotal = 0;
+    matchingItems.forEach(item => {
+        stationTotal += item.quantity_on_hand || 1;
+    });
+    
+    // Just show the total quantity in pill shape
+    countBadge.textContent = `${stationTotal} found`;
+}
                 stationsGrid.appendChild(cardClone);
             }
         });
@@ -823,8 +843,7 @@
 
         // Show search results info
         searchResultsInfo.innerHTML = stationsWithEquipment > 0
-            ? `<strong>Search Results:</strong> Found "${searchTerm}" in ${stationsWithEquipment} station(s)
-               <span class="equipment-quantity">Total: ${totalQuantity}</span>`
+            ? `<strong>Search Results:</strong> Found "${searchTerm}" in ${stationsWithEquipment} station(s)`
             : `<strong>No Results:</strong> No stations found with equipment "${searchTerm}"`;
 
         searchResultsInfo.style.display = 'block';
