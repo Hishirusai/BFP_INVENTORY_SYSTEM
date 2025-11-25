@@ -442,9 +442,8 @@
                 .then(response => response.json())
                 .then(item => {
                     const statusColors = {
-                        'active': 'from-green-400 to-emerald-500',
-                        'low_stock': 'from-yellow-400 to-orange-500',
-                        'inactive': 'from-red-400 to-rose-500'
+                        'serviceable': 'from-green-400 to-emerald-500',
+        'unserviceable': 'from-red-400 to-rose-500'
                     };
                     const statusColor = statusColors[item.status] || 'from-gray-400 to-gray-500';
 

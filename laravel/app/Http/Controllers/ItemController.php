@@ -109,7 +109,7 @@ public function showJson(Item $item)
         'condition' => $item->condition,
         'life_span_years' => $item->life_span_years,
         'date_acquired' => $item->date_acquired,
-        'status' => $item->status ?? 'active',
+        'status' => $item->condition,
         'created_at' => $item->created_at,
         'updated_at' => $item->updated_at,
         'station' => $item->station ? [
