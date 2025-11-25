@@ -71,7 +71,13 @@ class ItemController extends Controller
             'date_acquired' => 'nullable|date',
         ]);
 
-        Item::create($request->all());
+        // Calculate total_cost server-side
+        $data = $request->all();
+        $quantity = $request->quantity_on_hand ?? 0;
+        $unitCost = $request->unit_cost ?? 0;
+        $data['total_cost'] = $quantity * $unitCost;
+
+        Item::create($data);
 
         return redirect()->route('dashboard')->with('success', 'Item created successfully!');
     }
@@ -115,11 +121,13 @@ class ItemController extends Controller
             'date_acquired' => 'nullable|date',
         ]);
 
-        $item->update($request->all());
+        // Calculate total_cost server-side to ensure accuracy
+        $data = $request->all();
+        $quantity = $request->quantity_on_hand ?? 0;
+        $unitCost = $request->unit_cost ?? 0;
+        $data['total_cost'] = $quantity * $unitCost;
 
-        if ($request->has('apply')) {
-            return redirect()->route('items.edit', $item)->with('success', 'Item updated successfully!');
-        }
+        $item->update($data);
 
         if ($request->has('redirect_to') && $request->redirect_to) {
             return redirect($request->redirect_to)->with('success', 'Item updated successfully!');

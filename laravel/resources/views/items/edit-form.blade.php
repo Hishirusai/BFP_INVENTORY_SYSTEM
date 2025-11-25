@@ -74,7 +74,9 @@
             <label for="unit_cost" class="block text-sm font-medium text-gray-700 mb-2">Unit Cost</label>
             <input type="number" name="unit_cost" id="unit_cost" step="0.01" min="0"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                value="{{ old('unit_cost', $item->unit_cost) }}">
+                value="{{ old('unit_cost', $item->unit_cost) }}"
+                oninput="calculateTotalCost()" 
+                onchange="calculateTotalCost()">
             @error('unit_cost')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -97,7 +99,9 @@
             <label for="quantity_on_hand" class="block text-sm font-medium text-gray-700 mb-2">Quantity on Hand *</label>
             <input type="number" name="quantity_on_hand" id="quantity_on_hand" required min="0"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                value="{{ old('quantity_on_hand', $item->quantity_on_hand) }}">
+                value="{{ old('quantity_on_hand', $item->quantity_on_hand) }}"
+                oninput="calculateTotalCost()" 
+                onchange="calculateTotalCost()">
             @error('quantity_on_hand')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -139,11 +143,11 @@
         </div>
 
         <div>
-             <label for="date_expiry" class="block text-sm font-medium text-gray-700 mb-2">Date Expiry (dd/mm/yyyy)</label>
-                                <input type="date" id="date_expiry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value="{{ old('date_expiry', ($item->date_acquired && $item->life_span_years) ? $item->date_acquired->copy()->addYears($item->life_span_years)->format('Y-m-d') : '') }}">
-                                <input type="hidden" name="life_span_years" id="life_span_years_hidden" value="{{ old('life_span_years', $item->life_span_years) }}">
-                                <p class="text-xs text-gray-500 mt-1">Life span (years) will be computed automatically.</p>
+            <label for="date_expiry" class="block text-sm font-medium text-gray-700 mb-2">Date Expiry (dd/mm/yyyy)</label>
+            <input type="date" id="date_expiry" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value="{{ old('date_expiry', ($item->date_acquired && $item->life_span_years) ? $item->date_acquired->copy()->addYears($item->life_span_years)->format('Y-m-d') : '') }}">
+            <input type="hidden" name="life_span_years" id="life_span_years_hidden" value="{{ old('life_span_years', $item->life_span_years) }}">
+            <p class="text-xs text-gray-500 mt-1">Life span (years) will be computed automatically.</p>
             @error('life_span_years')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -156,10 +160,6 @@
             class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 font-semibold">
             Cancel
         </button>
-        <button type="submit" name="apply" value="1"
-                            class="px-6 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors">
-                            <i class="fas fa-check mr-2"></i>Apply
-                        </button>
         <button type="submit"
             class="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold">
             <i class="fas fa-save mr-2"></i>Update Item
@@ -168,67 +168,95 @@
 </form>
 
 <script>
-// Initialize the edit form calculations
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize the edit form calculations when the form loads
+function initializeEditFormCalculations() {
     // Add event listeners for auto-calculation
     const quantityInput = document.getElementById('quantity_on_hand');
     const unitCostInput = document.getElementById('unit_cost');
     
-    if (quantityInput && unitCostInput) {
-        quantityInput.addEventListener('input', calculateEditTotalCost);
-        unitCostInput.addEventListener('input', calculateEditTotalCost);
+    console.log('Initializing edit form calculations...');
+    
+    if (quantityInput) {
+        quantityInput.addEventListener('input', calculateTotalCost);
+        quantityInput.addEventListener('change', calculateTotalCost);
+    }
+    
+    if (unitCostInput) {
+        unitCostInput.addEventListener('input', calculateTotalCost);
+        unitCostInput.addEventListener('change', calculateTotalCost);
     }
     
     // Initial calculation
-    calculateEditTotalCost();
-});
+    calculateTotalCost();
+}
 
 function calculateTotalCost() {
-            const quantity = parseFloat(document.getElementById('quantity_on_hand').value) || 0;
-            const unitCost = parseFloat(document.getElementById('unit_cost').value) || 0;
-            const totalCost = quantity * unitCost;
-
-            document.getElementById('total_cost').value = totalCost.toFixed(2);
-        }
-
- // Compute life_span_years from date_acquired and date_expiry before submit
-        function computeLifeSpanYearsForForm() {
-            const dateAcqEl = document.getElementById('date_acquired');
-            const dateExpEl = document.getElementById('date_expiry');
-            const hiddenEl = document.getElementById('life_span_years_hidden');
-            if (!hiddenEl || !dateExpEl) return;
-
-            const dateExp = dateExpEl.value;
-            const dateAcq = dateAcqEl ? dateAcqEl.value : '';
-
-            if (dateExp && dateAcq) {
-                const acq = new Date(dateAcq);
-                const exp = new Date(dateExp);
-                let years = exp.getFullYear() - acq.getFullYear();
-                if (exp.getMonth() < acq.getMonth() || (exp.getMonth() === acq.getMonth() && exp.getDate() < acq.getDate())) {
-                    years--;
-                }
-                hiddenEl.value = Math.max(0, years);
-            } else if (dateExp && !dateAcq) {
-                const today = new Date();
-                const exp = new Date(dateExp);
-                let years = exp.getFullYear() - today.getFullYear();
-                if (exp.getMonth() < today.getMonth() || (exp.getMonth() === today.getMonth() && exp.getDate() < today.getDate())) {
-                    years--;
-                }
-                hiddenEl.value = Math.max(0, years);
-            } else {
-                hiddenEl.value = '';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dateExpEl = document.getElementById('date_expiry');
-            const dateAcqEl = document.getElementById('date_acquired');
-            if (dateExpEl) dateExpEl.addEventListener('change', computeLifeSpanYearsForForm);
-            if (dateAcqEl) dateAcqEl.addEventListener('change', computeLifeSpanYearsForForm);
-            const form = document.querySelector('form');
-            if (form) form.addEventListener('submit', computeLifeSpanYearsForForm);
-        });
+    const quantity = parseFloat(document.getElementById('quantity_on_hand')?.value) || 0;
+    const unitCost = parseFloat(document.getElementById('unit_cost')?.value) || 0;
+    const totalCostInput = document.getElementById('total_cost');
     
+    console.log('Calculating total cost:', { quantity, unitCost });
+    
+    if (totalCostInput) {
+        const totalCost = (quantity * unitCost).toFixed(2);
+        totalCostInput.value = totalCost;
+        console.log('Total cost calculated:', totalCost);
+    }
+}
+
+// Compute life_span_years from date_acquired and date_expiry before submit
+function computeLifeSpanYearsForForm() {
+    const dateAcqEl = document.getElementById('date_acquired');
+    const dateExpEl = document.getElementById('date_expiry');
+    const hiddenEl = document.getElementById('life_span_years_hidden');
+    if (!hiddenEl || !dateExpEl) return;
+
+    const dateExp = dateExpEl.value;
+    const dateAcq = dateAcqEl ? dateAcqEl.value : '';
+
+    if (dateExp && dateAcq) {
+        const acq = new Date(dateAcq);
+        const exp = new Date(dateExp);
+        let years = exp.getFullYear() - acq.getFullYear();
+        if (exp.getMonth() < acq.getMonth() || (exp.getMonth() === acq.getMonth() && exp.getDate() < acq.getDate())) {
+            years--;
+        }
+        hiddenEl.value = Math.max(0, years);
+    } else if (dateExp && !dateAcq) {
+        const today = new Date();
+        const exp = new Date(dateExp);
+        let years = exp.getFullYear() - today.getFullYear();
+        if (exp.getMonth() < today.getMonth() || (exp.getMonth() === today.getMonth() && exp.getDate() < today.getDate())) {
+            years--;
+        }
+        hiddenEl.value = Math.max(0, years);
+    } else {
+        hiddenEl.value = '';
+    }
+}
+
+// Form submission handler
+document.getElementById('editItemForm')?.addEventListener('submit', function(e) {
+    console.log('🟢 Edit form submitted!');
+    
+    // Ensure total cost is calculated before submit
+    calculateTotalCost();
+    computeLifeSpanYearsForForm();
+});
+
+// Initialize everything when the modal content loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditFormCalculations();
+    
+    const dateExpEl = document.getElementById('date_expiry');
+    const dateAcqEl = document.getElementById('date_acquired');
+    if (dateExpEl) dateExpEl.addEventListener('change', computeLifeSpanYearsForForm);
+    if (dateAcqEl) dateAcqEl.addEventListener('change', computeLifeSpanYearsForForm);
+    
+    const form = document.getElementById('editItemForm');
+    if (form) form.addEventListener('submit', computeLifeSpanYearsForForm);
+});
+
+// Also initialize with a delay for modal loading
+setTimeout(initializeEditFormCalculations, 100);
 </script>
