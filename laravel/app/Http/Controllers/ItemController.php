@@ -91,6 +91,36 @@ class ItemController extends Controller
     }
 
     /**
+ * Display the specified resource as JSON for modal details.
+ */
+public function showJson(Item $item)
+{
+    return response()->json([
+        'id' => $item->id,
+        'name' => $item->name,
+        'sku' => $item->sku,
+        'description' => $item->description,
+        'station_id' => $item->station_id,
+        'unit' => $item->unit,
+        'unit_cost' => $item->unit_cost,
+        'total_cost' => $item->total_cost,
+        'quantity_on_hand' => $item->quantity_on_hand,
+        'reorder_level' => $item->reorder_level,
+        'condition' => $item->condition,
+        'life_span_years' => $item->life_span_years,
+        'date_acquired' => $item->date_acquired,
+        'status' => $item->status ?? 'active',
+        'created_at' => $item->created_at,
+        'updated_at' => $item->updated_at,
+        'station' => $item->station ? [
+            'id' => $item->station->id,
+            'name' => $item->station->name,
+            'code' => $item->station->code
+        ] : null
+    ]);
+}
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Item $item)
