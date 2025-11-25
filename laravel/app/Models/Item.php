@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class Item extends Model
 {
@@ -11,24 +12,23 @@ class Item extends Model
         'name',
         'sku',
         'description',
-        'supplier_id',
-        'station_id',
-        'unit',
+        'quantity_on_hand',
         'unit_cost',
         'total_cost',
-        'quantity_on_hand',
-        'reorder_level',
-        'status',
-        'condition',
-        'life_span_years',
         'date_acquired',
-        'is_active',
+        'reorder_level',
+        'unit',
+        'condition',
+        'station_id',
+        'life_span_years', 
+        'expiry_date',     
     ];
 
     protected $casts = [
         'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
         'date_acquired' => 'datetime',
+        'expiry_date' => 'date',
         'is_active' => 'boolean',
     ];
 

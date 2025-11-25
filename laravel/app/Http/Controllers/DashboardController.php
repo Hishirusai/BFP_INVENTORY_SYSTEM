@@ -42,12 +42,20 @@ class DashboardController extends Controller
             ->count();
         $totalInventoryValue = Item::whereNull('station_id')->sum('total_cost');
         // Count unserviceable items (condition = unserviceable or expired by life span)
-        $unserviceableItems = Item::whereNull('station_id')
-            ->get()
-            ->filter(function($item) {
-                return $item->condition == 'unserviceable' || $item->isUnserviceableByLifespan();
+
+$totalInventoryValue = Item::whereNull('station_id')->sum('total_cost');
+
+        // NEW CORRECTED CODE:
+        $unserviceableItems = \App\Models\Item::whereNull('station_id') // Filters for Main Station
+            ->where(function ($group) {
+                $group->where('condition', 'unserviceable')
+                      ->orWhere(function ($query) {
+                          $query->whereNotNull('expiry_date')
+                                ->whereDate('expiry_date', '<', now());
+                      });
             })
             ->count();
+
         $recentReports = Report::with(['item', 'user'])->latest()->limit(4)->get();
 
         // Get all unique units for filter dropdown (Main Central Station only)
