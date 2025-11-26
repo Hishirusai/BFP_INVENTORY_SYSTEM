@@ -437,71 +437,120 @@
             });
         });
 
-        function showItemDetails(itemId) {
-            fetch(`/items/${itemId}/json`)
-                .then(response => response.json())
-                .then(item => {
-                    const statusColors = {
-                        'serviceable': 'from-green-400 to-emerald-500',
-        'unserviceable': 'from-red-400 to-rose-500'
-                    };
-                    const statusColor = statusColors[item.status] || 'from-gray-400 to-gray-500';
+            function showItemDetails(itemId) {
+                // 1. Show small loading spinner first
+                document.getElementById('itemDetailsContent').innerHTML = `
+                <div class="flex justify-center items-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>`;
 
-                    const content = `
-                        <div class="space-y-4">
-                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-tag mr-2 text-blue-600"></i>Item Name</h4>
-                                <p class="text-gray-900 font-semibold text-lg">${item.name}</p>
+                // 2. Open Modal Animation
+                const modal = document.getElementById('itemDetailsModal');
+                const modalContent = document.getElementById('modalContent');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95');
+                    modalContent.classList.add('scale-100');
+                }, 10);
+
+                // 3. Fetch Data
+                fetch(`/items/${itemId}/json`)
+                    .then(response => response.json())
+                    .then(item => {
+                        // --- LOGIC: Check Expiry & Force Status ---
+                        let isExpired = false;
+                        let expiryDisplay = '<span class="text-gray-400 italic text-xs">N/A</span>';
+
+                        if (item.expiry_date) {
+                            const expDate = new Date(item.expiry_date);
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0); // Reset time for accurate date comparison
+
+                            isExpired = expDate < today;
+                            const dateString = expDate.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                            });
+
+                            if (isExpired) {
+                                expiryDisplay = `<span class="text-red-600 font-bold text-xs"><i class="fas fa-exclamation-circle mr-1"></i>${dateString}</span>`;
+                            } else {
+                                expiryDisplay = `<span class="text-gray-800 text-xs font-semibold">${dateString}</span>`;
+                            }
+                        }
+
+                        // FORCE STATUS: If expired, override database status to 'unserviceable'
+                        let finalStatus = isExpired ? 'unserviceable' : item.status;
+
+                        // Color logic
+                        const statusColors = {
+                            'serviceable': 'from-green-500 to-emerald-600',
+                            'unserviceable': 'from-red-500 to-rose-600'
+                        };
+                        const statusBg = statusColors[finalStatus] || 'from-gray-400 to-gray-500';
+
+                        // --- HTML: Compact Layout ---
+                        const content = `
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-start bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+                                <div class="pr-2">
+                                    <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-0.5">Item Name</h4>
+                                    <p class="text-gray-900 font-bold text-sm leading-tight">${item.name}</p>
+                                    <p class="text-[10px] text-gray-500 mt-1 font-mono">SKU: ${item.sku}</p>
+                                </div>
+                                <span class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider bg-gradient-to-r ${statusBg} shadow-sm">
+                                    ${finalStatus.toUpperCase().replace('_', ' ')}
+                                </span>
                             </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-barcode mr-2 text-gray-600"></i>SKU</h4>
-                                <p class="text-gray-900">${item.sku}</p>
+
+                            <div class="bg-white p-2.5 rounded-lg border border-gray-100">
+                                <h4 class="text-[10px] font-bold text-gray-400 uppercase mb-1">Description</h4>
+                                <p class="text-gray-700 text-xs leading-relaxed">${item.description || 'No description provided.'}</p>
                             </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-align-left mr-2 text-gray-600"></i>Description</h4>
-                                <p class="text-gray-900">${item.description || 'N/A'}</p>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="bg-blue-50 p-2 rounded-lg border border-blue-100 text-center">
+                                    <h4 class="text-[9px] font-bold text-blue-600 uppercase mb-0.5">Qty On Hand</h4>
+                                    <p class="text-blue-900 font-bold text-sm">${item.quantity_on_hand} <span class="text-[10px] font-normal text-blue-700">${item.unit}</span></p>
+                                </div>
+                                <div class="bg-green-50 p-2 rounded-lg border border-green-100 text-center">
+                                     <h4 class="text-[9px] font-bold text-green-600 uppercase mb-0.5">Unit Cost</h4>
+                                    <p class="text-green-900 font-bold text-sm">₱${parseFloat(item.unit_cost).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                                </div>
+                                <div class="bg-purple-50 p-2 rounded-lg border border-purple-100 text-center">
+                                    <h4 class="text-[9px] font-bold text-purple-600 uppercase mb-0.5">Total Cost</h4>
+                                    <p class="text-purple-900 font-bold text-sm">₱${parseFloat(item.total_cost).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                                </div>
                             </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-calendar-alt mr-2 text-gray-600"></i>Date Acquired</h4>
-                                <p class="text-gray-900">${item.date_acquired ? new Date(item.date_acquired).toLocaleDateString() : 'N/A'}</p>
-                            </div>
-                            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-lg border-l-4 border-blue-500">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-boxes mr-2 text-blue-600"></i>Quantity on Hand</h4>
-                                <p class="text-gray-900 font-bold text-xl">${item.quantity_on_hand} ${item.unit}</p>
-                            </div>
-                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-l-4 border-green-500">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-coins mr-2 text-green-600"></i>Unit Cost</h4>
-                                <p class="text-gray-900 font-bold text-xl text-green-700">₱${parseFloat(item.unit_cost).toFixed(2)}</p>
-                            </div>
-                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg border-l-4 border-purple-500">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-money-bill-wave mr-2 text-purple-600"></i>Total Cost</h4>
-                                <p class="text-gray-900 font-bold text-xl text-purple-700">₱${parseFloat(item.total_cost).toFixed(2)}</p>
-                            </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-exclamation-circle mr-2 text-gray-600"></i>Reorder Level</h4>
-                                <p class="text-gray-900 font-semibold">${item.reorder_level}</p>
-                            </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="font-bold text-gray-700 mb-2 flex items-center"><i class="fas fa-info-circle mr-2 text-gray-600"></i>Status</h4>
-                                <span class="inline-block px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${statusColor} shadow-lg">${item.status.charAt(0).toUpperCase() + item.status.slice(1).replace('_', ' ')}</span>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                 <div class="bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                    <h4 class="text-[9px] font-bold text-gray-400 uppercase mb-0.5">Acquired</h4>
+                                    <p class="text-gray-800 text-xs font-medium truncate">${item.date_acquired ? new Date(item.date_acquired).toLocaleDateString() : 'N/A'}</p>
+                                </div>
+                                <div class="bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                    <h4 class="text-[9px] font-bold text-gray-400 uppercase mb-0.5">Expiry</h4>
+                                    ${expiryDisplay}
+                                </div>
+                                <div class="bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                     <h4 class="text-[9px] font-bold text-gray-400 uppercase mb-0.5">Reorder Lvl</h4>
+                                     <p class="text-gray-800 text-xs font-medium">${item.reorder_level}</p>
+                                </div>
                             </div>
                         </div>
                     `;
-                    document.getElementById('itemDetailsContent').innerHTML = content;
-                    const modal = document.getElementById('itemDetailsModal');
-                    const modalContent = document.getElementById('modalContent');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    setTimeout(() => {
-                        modalContent.classList.remove('scale-95');
-                        modalContent.classList.add('scale-100');
-                    }, 10);
-                })
-                .catch(error => {
-                    console.error('Error fetching item details:', error);
-                    alert('Error loading item details. Please try again.');
-                });
-        }
+                        document.getElementById('itemDetailsContent').innerHTML = content;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching item details:', error);
+                        document.getElementById('itemDetailsContent').innerHTML = `
+                        <div class="text-center p-4 text-red-500 text-sm">
+                            <i class="fas fa-exclamation-circle mb-1"></i><br>Failed to load details.
+                        </div>`;
+                    });
+            }
 
         function closeItemDetailsModal() {
             const modal = document.getElementById('itemDetailsModal');
