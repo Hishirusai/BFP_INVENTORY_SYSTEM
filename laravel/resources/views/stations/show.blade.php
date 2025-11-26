@@ -178,8 +178,8 @@
                         <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent flex items-center">
                             <i class="fas fa-building mr-2 text-blue-600"></i>{{ $station->name }} - Inventory Management
                         </h2>
-                        <a href="{{ route('dashboard') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-[11px]">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        <a href="{{ route('stations.index') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-[11px]">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Stations
                 </a>
                     </div>
 
